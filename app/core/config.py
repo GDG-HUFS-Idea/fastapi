@@ -3,13 +3,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Setting(BaseSettings):
-    app_port: int = 80
+    app_port: int
 
-    pg_host: str = ""
-    pg_port: int = 5432
-    pg_user: str = ""
-    pg_pw: str = ""
-    pg_db: str = ""
+    session_middleware_secret: str
+
+    google_oauth_client_id: str
+    google_oauth_secret: str
+    google_oauth_callback_uri: str
+
+    pg_host: str
+    pg_port: int
+    pg_user: str
+    pg_pw: str
+    pg_db: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
@@ -19,4 +25,4 @@ class Setting(BaseSettings):
     )
 
 
-env = Setting()
+env = Setting()  # type: ignore

@@ -20,16 +20,16 @@ async def setup_deletion_log_trigger(conn: AsyncConnection) -> bool:
         mode="r",
         encoding="utf-8",
     ) as file:
-        func_sql = file.read()
+        func_query = file.read()
 
     with open(
         "app/db/sql/deletion_log_trigger.sql",
         mode="r",
         encoding="utf-8",
     ) as file:
-        trigger_sql = file.read()
+        trigger_query = file.read()
 
-    await conn.execute(text(func_sql))
-    await conn.execute(text(trigger_sql))
+    await conn.execute(text(func_query))
+    await conn.execute(text(trigger_query))
 
     return True
