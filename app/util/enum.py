@@ -1,6 +1,10 @@
 from enum import Enum
 
 
+class OauthProvider(str, Enum):
+    GOOGLE = "google"
+
+
 class TermType(str, Enum):
     TERMS_OF_SERVICE = "terms_of_service"
     PRIVACY_POLICY = "privacy_policy"

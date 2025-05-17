@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import env
 from app.db.init import init_db
+from app.core.config import env
 
 
 @asynccontextmanager
@@ -14,6 +16,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(SessionMiddleware, secret_key=env.session_middleware_secret)
 
 if __name__ == "__main__":
     uvicorn.run(
