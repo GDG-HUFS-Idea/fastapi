@@ -5,6 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import env
 from app.db.init import init_db
+from app.api.router.auth import auth_router
 from app.core.config import env
 
 
@@ -17,6 +18,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(SessionMiddleware, secret_key=env.session_middleware_secret)
+
+app.include_router(auth_router)
 
 if __name__ == "__main__":
     uvicorn.run(
