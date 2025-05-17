@@ -8,7 +8,7 @@ from app.core.authlib import oauth
 
 
 class RedirectOAuthServiceDTO(BaseModel):
-    provider: OauthProvider = Field(Path())
+    provider: OauthProvider = Field(Path(description="OAuth 인증 제공자"))
 
 
 class RedirectOAuthService:
