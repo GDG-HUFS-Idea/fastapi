@@ -11,6 +11,11 @@ class Setting(BaseSettings):
     google_oauth_secret: str
     google_oauth_callback_uri: str
 
+    frontend_redirect_url: str
+
+    redis_host: str
+    redis_port: int
+
     pg_host: str
     pg_port: int
     pg_user: str

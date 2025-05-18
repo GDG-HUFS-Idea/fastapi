@@ -5,6 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.exceptions import (
     RequestValidationError as RequestValidationException,
 )
+from starlette.exceptions import HTTPException
 
 from app.core.config import env
 from app.db.init import init_db
@@ -40,6 +41,15 @@ def validation_exception_handler(
         raise FieldMissingException from exc
     else:
         raise ValidationException from exc
+
+
+@app.exception_handler(HTTPException)
+def global_http_exception_handler(req: Request, exc: HTTPException):
+    """
+    FastAPI 자체에서 발생하는 모든 HTTP 예외를 처리하는 핸들러
+    """
+
+    return Response(status_code=exc.status_code, headers=exc.headers)
 
 
 @app.exception_handler(Exception)
