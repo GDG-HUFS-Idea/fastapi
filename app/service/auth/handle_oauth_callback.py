@@ -32,7 +32,7 @@ class HandleOAuthCallbackService:
     ) -> RedirectResponse:
         host = self.extract_host(req)
         raw_profile = await self.fetch_profile(req, dto.provider)
-        profile_id = await self.set_profile(raw_profile, host)
+        profile_id = await self.set_oauth_profile(raw_profile, host)
         redirect_url = self.generate_redirect_url(profile_id)
 
         return RedirectResponse(redirect_url)
@@ -67,7 +67,9 @@ class HandleOAuthCallbackService:
         except Exception as exc:
             raise OAuthServerException from exc
 
-    async def set_profile(self, raw_profile: RawProfile, host: str) -> str:
+    async def set_oauth_profile(
+        self, raw_profile: RawProfile, host: str
+    ) -> str:
         """
         결과 조회를 위해 Redis에 프로필 정보 임시 저장 (2분 후 만료)
         """
