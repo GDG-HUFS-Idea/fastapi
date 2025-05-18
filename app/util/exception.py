@@ -23,9 +23,19 @@ class NoPermissionException(Base):
     name = "권한 없음"
 
 
+class DataNotFoundException(Base):
+    status = 404
+    name = "제공할 데이터 없음"
+
+
 class CSRFException(Base):
     status = 403
-    name = "csrf 토큰 불일치"
+    name = "CSRF 토큰 불일치"
+
+
+class DBServerException(Base):
+    status = 502
+    name = "DB 서버 오류"
 
 
 class OAuthServerException(Base):

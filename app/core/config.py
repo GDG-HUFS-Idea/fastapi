@@ -6,6 +6,7 @@ class Setting(BaseSettings):
     app_port: int
 
     session_middleware_secret: str
+    jwt_secret: str
 
     google_oauth_client_id: str
     google_oauth_secret: str
@@ -21,6 +22,11 @@ class Setting(BaseSettings):
     pg_user: str
     pg_pw: str
     pg_db: str
+    pg_host: str
+    pg_port: int
+    pg_user: str
+    pg_pw: str
+    pg_db: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
@@ -30,4 +36,5 @@ class Setting(BaseSettings):
     )
 
 
+env = Setting()  # type: ignore
 env = Setting()  # type: ignore

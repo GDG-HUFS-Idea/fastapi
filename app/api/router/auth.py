@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 
-from app.api.dep import get_redis_session
+from app.api.dep import get_pg_session, get_redis_session
 from app.service.auth.handle_oauth_callback import (
     HandleOAuthCallbackService,
     HandleOAuthCallbackServiceDTO,
@@ -11,9 +11,80 @@ from app.service.auth.redirect_oauth import (
     RedirectOAuthService,
     RedirectOAuthServiceDTO,
 )
+from app.service.auth.retrieve_oauth_result import (
+    RetrieveOAuthResultService,
+    RetrieveOAuthResultServiceDTO,
+    RetrieveOAuthResultServiceResponse,
+)
+from app.util.enum import UserRole
 
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@auth_router.get(
+    path="/oauth/result",
+    status_code=200,
+    response_model=RetrieveOAuthResultServiceResponse,
+    response_model_exclude_none=True,
+    responses={
+        200: {
+            "description": "OAuth 인증 결과를 성공적으로 조회함",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "이미 계정이 있는 사용자": {
+                            "value": {
+                                "has_account": True,
+                                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                                "user_id": 123,
+                                "roles": [UserRole.GENERAL],
+                                "name": "홍길동",
+                            }
+                        },
+                        "계정이 없는 신규 사용자": {
+                            "value": {
+                                "has_account": False,
+                                "code": "FYVjdmoq9RQ2UPYu_cCRhA",
+                                "signup_term_ids": [1, 2, 3],
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        400: {
+            "description": "FieldMissingException: 요청에 필수 파라미터가 "
+            "누락되었거나, 요청 객체에 클라이언트 정보가 없음"
+        },
+        403: {
+            "description": "NoPermissionException: 요청 호스트와 OAuth 프로필의 "
+            "호스트가 일치하지 않음"
+        },
+        404: {
+            "description": "DataNotFoundException: OAuth 프로필을 찾을 수 없거나 "
+            "필요한 약관 정보가 존재하지 않음"
+        },
+        422: {
+            "description": "ValidationException: 요청 데이터의 형식이 올바르지만 "
+            "비즈니스 규칙에 따른 유효성 검증에 실패함"
+        },
+        500: {"description": "원인 불명의 내부 로직 오류가 발생함"},
+        502: {
+            "description": "CacheServerException/DBServerException: Redis 캐시 서버나 "
+            "데이터베이스 서버와의 통신 중 오류가 발생함"
+        },
+    },
+)
+async def retrieve_oauth_result(
+    req: Request,
+    dto: Annotated[RetrieveOAuthResultServiceDTO, Depends()],
+    pg_session=Depends(get_pg_session),
+    redis_session=Depends(get_redis_session),
+):
+    return await RetrieveOAuthResultService(pg_session, redis_session).exec(
+        req, dto
+    )
 
 
 @auth_router.get(
