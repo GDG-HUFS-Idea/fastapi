@@ -40,7 +40,7 @@ async def test_handle_oauth_callback_success():
         HandleOAuthCallbackService, "exec", side_effect=mock_exec
     ):
         res = client.get(
-            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=mock_code&state=mock_state"
+            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=FYVjdmoq9RQ2UPYu_cCRhA&state=mock_state"
         )
         assert res.status_code == 307
         assert res.headers["location"] == mock_frontend_url
@@ -85,7 +85,7 @@ async def test_handle_oauth_callback_csrf_exception():
         HandleOAuthCallbackService, "exec", side_effect=mock_exec
     ):
         res = client.get(
-            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=mock_code&state=invalid_state"
+            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=FYVjdmoq9RQ2UPYu_cCRhA&state=invalid_state"
         )
         assert res.status_code == 403
 
@@ -97,7 +97,7 @@ async def test_handle_oauth_callback_invalid_provider():
     """
 
     res = client.get(
-        "/auth/oauth/invalid_provider/callback?code=mock_code&state=mock_state"
+        "/auth/oauth/invalid_provider/callback?code=FYVjdmoq9RQ2UPYu_cCRhA&state=mock_state"
     )
     assert res.status_code == 422
 
@@ -120,7 +120,7 @@ async def test_handle_oauth_callback_oauth_server_error():
         HandleOAuthCallbackService, "exec", side_effect=mock_exec
     ):
         res = client.get(
-            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=mock_code&state=mock_state"
+            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=FYVjdmoq9RQ2UPYu_cCRhA&state=mock_state"
         )
         assert res.status_code == 502
 
@@ -143,6 +143,6 @@ async def test_handle_oauth_callback_cache_server_error():
         HandleOAuthCallbackService, "exec", side_effect=mock_exec
     ):
         res = client.get(
-            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=mock_code&state=mock_state"
+            f"/auth/oauth/{OauthProvider.GOOGLE.value}/callback?code=FYVjdmoq9RQ2UPYu_cCRhA&state=mock_state"
         )
         assert res.status_code == 502
