@@ -22,6 +22,11 @@ class Setting(BaseSettings):
     pg_user: str
     pg_pw: str
     pg_db: str
+    pg_host: str
+    pg_port: int
+    pg_user: str
+    pg_pw: str
+    pg_db: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
@@ -31,4 +36,5 @@ class Setting(BaseSettings):
     )
 
 
+env = Setting()  # type: ignore
 env = Setting()  # type: ignore

@@ -12,6 +12,9 @@ from app.db.init import init_db
 from app.api.router.auth import auth_router
 from app.core.config import env
 from app.util.exception import FieldMissingException, ValidationException
+from app.api.router.auth import auth_router
+from app.core.config import env
+from app.util.exception import FieldMissingException, ValidationException
 
 
 @asynccontextmanager
