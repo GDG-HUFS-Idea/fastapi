@@ -6,6 +6,7 @@ class Setting(BaseSettings):
     app_port: int
 
     session_middleware_secret: str
+    jwt_secret: str
 
     google_oauth_client_id: str
     google_oauth_secret: str

@@ -4,6 +4,7 @@ import types
 class MockSetting:
     app_port = 8000
     session_middleware_secret = "test_secret_key"
+    jwt_secret = "test_jwt_secret"
     google_oauth_client_id = "test_client_id"
     google_oauth_secret = "test_secret"
     google_oauth_callback_uri = "http://localhost:8000/auth/callback/google"
