@@ -10,7 +10,7 @@ freeze:
 	pip freeze > requirements.txt
 
 test:
-	PYTHONPATH=. pytest
+	PYTHONPATH=. pytest -v
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} +

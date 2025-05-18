@@ -1,5 +1,10 @@
 import pytest
 from unittest import mock
+
+from app.test.mock_config import register_mock_env
+
+register_mock_env()
+
 from fastapi.testclient import TestClient
 from fastapi.responses import RedirectResponse
 
@@ -50,7 +55,7 @@ async def test_redirect_oauth_missing_field():
     """
 
     async def mock_exec(*args, **kwargs):
-        raise FieldMissingException()
+        raise FieldMissingException
 
     with mock.patch.object(
         RedirectOAuthService, "exec", side_effect=mock_exec
@@ -66,7 +71,7 @@ async def test_redirect_oauth_server_error():
     """
 
     async def mock_exec(*args, **kwargs):
-        raise OAuthServerException()
+        raise OAuthServerException
 
     with mock.patch.object(
         RedirectOAuthService, "exec", side_effect=mock_exec
@@ -82,7 +87,7 @@ async def test_redirect_oauth_client_creation_failed():
     """
 
     def mock_create_client(*args, **kwargs):
-        raise Exception("OAuth 클라이언트 생성 실패")
+        raise Exception
 
     with mock.patch(
         "app.core.authlib.oauth.create_client", side_effect=mock_create_client
