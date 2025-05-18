@@ -25,7 +25,7 @@ class HandleOAuthCallbackServiceDTO(BaseModel):
 
 class HandleOAuthCallbackService:
     def __init__(self, redis_session: Redis):
-        self.profile_cache = OAuthProfileCache(session=redis_session)
+        self.oauth_profile_cache = OAuthProfileCache(session=redis_session)
 
     async def exec(
         self, req: Request, dto: HandleOAuthCallbackServiceDTO
@@ -72,7 +72,7 @@ class HandleOAuthCallbackService:
         결과 조회를 위해 Redis에 프로필 정보 임시 저장 (2분 후 만료)
         """
         try:
-            return await self.profile_cache.set(
+            return await self.oauth_profile_cache.set(
                 oauth_profile=OAuthProfile(
                     name=raw_profile.name,
                     email=raw_profile.email,
