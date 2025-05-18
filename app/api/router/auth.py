@@ -23,7 +23,7 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @auth_router.get(
-    path="/auth/oauth/result",
+    path="/oauth/result",
     status_code=200,
     response_model=RetrieveOAuthResultServiceResponse,
     response_model_exclude_none=True,
