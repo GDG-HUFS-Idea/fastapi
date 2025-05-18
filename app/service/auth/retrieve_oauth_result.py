@@ -23,7 +23,9 @@ from app.util.schema import OAuthProfile, Payload
 
 
 class RetrieveOAuthResultServiceDTO(BaseModel):
-    code: str = Field(Query(description="OAuth 인증 결과 소유자 식별 코드"))
+    code: str = Field(
+        Query(description="OAuth 인증 결과 소유자 식별 코드"), min_length=10
+    )
 
 
 class RetrieveOAuthResultServiceResponse(BaseModel):

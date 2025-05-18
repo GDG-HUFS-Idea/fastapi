@@ -20,7 +20,7 @@ from app.util.schema import OAuthProfile, RawProfile
 
 class HandleOAuthCallbackServiceDTO(BaseModel):
     provider: OauthProvider = Field(Path(description="OAuth 인증 제공자"))
-    code: str = Field(Query(description="OAuth 인증 코드"))
+    code: str = Field(Query(description="OAuth 인증 코드"), min_length=10)
 
 
 class HandleOAuthCallbackService:
