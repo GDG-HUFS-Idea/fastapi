@@ -2,6 +2,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 
+from app.api.dep import get_redis_session
+from app.service.auth.handle_oauth_callback import (
+    HandleOAuthCallbackService,
+    HandleOAuthCallbackServiceDTO,
+)
 from app.service.auth.redirect_oauth import (
     RedirectOAuthService,
     RedirectOAuthServiceDTO,
@@ -37,9 +42,8 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 async def redirect_oauth(
     req: Request,
     dto: Annotated[RedirectOAuthServiceDTO, Depends()],
-    service=RedirectOAuthService(),
 ):
-    return await service.exec(req, dto)
+    return await RedirectOAuthService().exec(req, dto)
 
 
 @auth_router.get(
@@ -48,5 +52,7 @@ async def redirect_oauth(
 )
 async def handle_oauth_callback(
     req: Request,
+    dto: Annotated[HandleOAuthCallbackServiceDTO, Depends()],
+    redis_session=Depends(get_redis_session),
 ):
-    return
+    return await HandleOAuthCallbackService(redis_session).exec(req, dto)
