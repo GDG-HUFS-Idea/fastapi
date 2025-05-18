@@ -15,9 +15,24 @@ class FieldMissingException(Base):
 
 class ValidationException(Base):
     status = 422
-    name = '데이터 유효성 검증 실패'
+    name = "데이터 유효성 검증 실패"
+
+
+class NoPermissionException(Base):
+    status = 403
+    name = "권한 없음"
+
+
+class CSRFException(Base):
+    status = 403
+    name = "csrf 토큰 불일치"
 
 
 class OAuthServerException(Base):
     status = 502
     name = "OAuth 서버 연결 오류"
+
+
+class CacheServerException(Base):
+    status = 502
+    name = "캐시 서버 오류"
