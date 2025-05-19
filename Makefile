@@ -1,7 +1,7 @@
 .PHONY: run install test clean freeze migrate
 
 run:
-	docker compose up --build
+	docker compose up
 
 install:
 	pip install -r requirements.txt

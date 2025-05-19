@@ -7,7 +7,6 @@ class MockSetting:
     jwt_secret = "test_jwt_secret"
     google_oauth_client_id = "test_client_id"
     google_oauth_secret = "test_secret"
-    google_oauth_callback_uri = "http://localhost:8000/auth/callback/google"
     frontend_redirect_url = "http://localhost:3000"
     redis_host = "localhost"
     redis_port = 6379
