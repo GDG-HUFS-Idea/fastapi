@@ -11,7 +11,7 @@ from app.util.exception import DBServerException, DataNotFoundException
 
 
 class RetrieveTermsServiceDTO(BaseModel):
-    ids: List[int] = Field(Query())
+    ids: List[int] = Field(Query(description="약관 ID 목록"))
 
 
 class TermResponse(BaseModel):
