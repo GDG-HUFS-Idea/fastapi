@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import List
-from fastapi import Request
-from pydantic import BaseModel
+from fastapi import Body, Request
+from pydantic import BaseModel, Field
 from redis.asyncio import Redis
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -26,13 +26,41 @@ from app.util.schema import OAuthProfile, Payload
 
 
 class TermAgreementDTO(BaseModel):
-    term_id: int
-    has_agreed: bool
+    term_id: int = Field(description="약관 ID", gt=0)
+    has_agreed: bool = Field(description="약관 동의 여부")
 
 
 class OAuthSignupServiceDTO(BaseModel):
-    code: str
+    code: str = Field(
+        description="RetrieveOAuthResult 서비스에서 받았던 일회용 사용자 식별용 인증 코드",
+        min_length=10,
+        max_length=50,
+    )
     term_agreements: List[TermAgreementDTO]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "code": "Zc9oYj-AmN-gBqeTSATmow",
+                    "term_agreements": [
+                        {
+                            "term_id": 1,
+                            "has_agreed": True,
+                        },
+                        {
+                            "term_id": 2,
+                            "has_agreed": True,
+                        },
+                        {
+                            "term_id": 3,
+                            "has_agreed": False,
+                        },
+                    ],
+                }
+            ]
+        }
+    }
 
 
 class OAuthSignupServiceResponse(BaseModel):
