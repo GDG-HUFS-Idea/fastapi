@@ -17,7 +17,7 @@ from app.util.exception import (
     DBServerException,
     CacheServerException,
 )
-from app.service.auth.oauth_signup import OAuthSignupService
+from app.service.auth.oauth_signup import OAuthSignUpService
 
 client = TestClient(app, raise_server_exceptions=False)
 
@@ -47,7 +47,7 @@ async def test_oauth_signup_success():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -83,7 +83,7 @@ async def test_oauth_signup_field_missing():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -113,7 +113,7 @@ async def test_oauth_signup_validation_error():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -150,7 +150,7 @@ async def test_oauth_signup_no_permission():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -184,7 +184,7 @@ async def test_oauth_signup_data_not_found():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -218,7 +218,7 @@ async def test_oauth_signup_db_server_error():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",
@@ -252,7 +252,7 @@ async def test_oauth_signup_cache_server_error():
         "app.api.dep.get_redis_session",
         return_value=mock_redis_session,
     ), mock.patch.object(
-        OAuthSignupService, "exec", side_effect=mock_exec
+        OAuthSignUpService, "exec", side_effect=mock_exec
     ):
         res = client.post(
             "/auth/oauth/signup",

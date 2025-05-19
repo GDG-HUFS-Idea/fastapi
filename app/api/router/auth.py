@@ -8,9 +8,9 @@ from app.service.auth.handle_oauth_callback import (
     HandleOAuthCallbackServiceDTO,
 )
 from app.service.auth.oauth_signup import (
-    OAuthSignupService,
-    OAuthSignupServiceDTO,
-    OAuthSignupServiceResponse,
+    OAuthSignUpService,
+    OAuthSignUpServiceDTO,
+    OAuthSignUpServiceResponse,
 )
 from app.service.auth.redirect_oauth import (
     RedirectOAuthService,
@@ -40,7 +40,7 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 @auth_router.post(
     path="/oauth/signup",
     status_code=201,
-    response_model=OAuthSignupServiceResponse,
+    response_model=OAuthSignUpServiceResponse,
     response_model_exclude_none=True,
     responses={
         201: {
@@ -82,11 +82,11 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def oauth_signup(
     req: Request,
-    dto: Annotated[OAuthSignupServiceDTO, Body()],
+    dto: Annotated[OAuthSignUpServiceDTO, Body()],
     pg_session=Depends(get_pg_session),
     redis_session=Depends(get_redis_session),
 ):
-    return await OAuthSignupService(pg_session, redis_session).exec(req, dto)
+    return await OAuthSignUpService(pg_session, redis_session).exec(req, dto)
 
 
 @auth_router.get(

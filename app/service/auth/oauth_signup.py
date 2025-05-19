@@ -30,7 +30,7 @@ class TermAgreementDTO(BaseModel):
     has_agreed: bool = Field(description="약관 동의 여부")
 
 
-class OAuthSignupServiceDTO(BaseModel):
+class OAuthSignUpServiceDTO(BaseModel):
     code: str = Field(
         description="RetrieveOAuthResult 서비스에서 받았던 일회용 사용자 식별용 인증 코드",
         min_length=10,
@@ -63,14 +63,14 @@ class OAuthSignupServiceDTO(BaseModel):
     }
 
 
-class OAuthSignupServiceResponse(BaseModel):
+class OAuthSignUpServiceResponse(BaseModel):
     token: str
     user_id: int
     roles: List[UserRole]
     name: str
 
 
-class OAuthSignupService:
+class OAuthSignUpService:
 
     def __init__(self, pg_session: AsyncSession, redis_session: Redis):
         self.user_repo = UserRepo(pg_session)
@@ -79,8 +79,8 @@ class OAuthSignupService:
         self.oauth_profile_cache = OAuthProfileCache(redis_session)
 
     async def exec(
-        self, req: Request, dto: OAuthSignupServiceDTO
-    ) -> OAuthSignupServiceResponse:
+        self, req: Request, dto: OAuthSignUpServiceDTO
+    ) -> OAuthSignUpServiceResponse:
         host = self.extract_host(req)
         profile = await self.get_oauth_profile(dto.code, host)
         signup_terms = await self.retrieve_signup_terms()
@@ -93,7 +93,7 @@ class OAuthSignupService:
         token = self.sign_token(user)
         await self.evict_oauth_profile(dto.code)
 
-        return OAuthSignupServiceResponse(
+        return OAuthSignUpServiceResponse(
             token=token,
             user_id=user.id,  # type: ignore
             roles=user.roles,
