@@ -10,6 +10,7 @@ from starlette.exceptions import HTTPException
 from app.core.config import env
 from app.db.init import init_db
 from app.api.router.auth import auth_router
+from app.api.router.term import term_router
 from app.core.config import env
 from app.util.exception import FieldMissingException, ValidationException
 from app.api.router.auth import auth_router
@@ -28,6 +29,7 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=env.session_middleware_secret)
 
 app.include_router(auth_router)
+app.include_router(term_router)
 
 
 @app.exception_handler(RequestValidationError)
