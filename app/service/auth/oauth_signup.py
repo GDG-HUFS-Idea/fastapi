@@ -101,7 +101,7 @@ class OAuthSignupService:
 
     async def retrieve_signup_terms(self) -> List[Term]:
         """
-        약관 동의 목록 조회
+        회원가입시 필요한 약관 동의 목록 조회
         """
 
         signup_term_types = [

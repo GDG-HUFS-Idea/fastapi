@@ -32,6 +32,45 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
     status_code=201,
     response_model=OAuthSignupServiceResponse,
     response_model_exclude_none=True,
+    responses={
+        201: {
+            "description": "OAuth 로그인을 통한 회원가입이 성공적으로 처리됨",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "user_id": 2,
+                        "roles": [UserRole.GENERAL],
+                        "name": "홍길동",
+                    }
+                }
+            },
+        },
+        400: {
+            "description": "FieldMissingException: 요청에 필수 필드(code, term_agreements)가 "
+            "누락되었거나, 필수 동의 항목에 동의하지 않았거나, 요청 객체에 클라이언트 호스트 정보가 없음"
+        },
+        422: {
+            "description": "ValidationException: 제출된 약관 동의 정보와 "
+            "필요한 약관 정보가 일치하지 않는 등 데이터 유효성 검증에 실패함"
+        },
+        403: {
+            "description": "NoPermissionException: 요청한 code에 저장된 "
+            "호스트 정보와 현재 요청의 호스트가 다르거나 접근 권한이 없음"
+        },
+        404: {
+            "description": "DataNotFoundException: 요청한 OAuth 인증 코드에 "
+            "해당하는 프로필 정보를 캐시 서버에서 찾을 수 없거나, 필요한 약관 정보가 사전에 DB에 존재하지 않음"
+        },
+        500: {
+            "description": "JWT 토큰 생성 과정에서 오류가 발생하거나, 원인 불명의 내부 로직 오류가 발생함"
+        },
+        502: {
+            "description": "DBServerException/CacheServerException: 사용자 정보 저장, "
+            "약관 동의 저장, 약관 정보 조회 중 DB 서버 오류가 발생하거나, "
+            "OAuth 프로필 정보 조회 중 캐시 서버와의 통신 오류가 발생함"
+        },
+    },
 )
 async def oauth_signup(
     req: Request,
