@@ -17,7 +17,10 @@ from app.service.analysis.project_analyzer import ProjectAnalyzer
 
 import logging
 
-# 로깅 설정
+# httpx 로거의 레벨을 WARNING으로 설정하여 HTTP 요청 로그 숨기기
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+# 기본 로깅 설정
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'

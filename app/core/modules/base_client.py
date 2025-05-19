@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class BaseAnalyzer:
     # API 설정
-    MODEL = "sonar-reasoning-pro"
+    MODEL = "sonar"
     DEFAULT_TEMPERATURE = 0.7
     DEFAULT_MAX_TOKENS = 1000
     
@@ -25,13 +25,13 @@ class BaseAnalyzer:
 
     def __init__(self):
         self.api_key = env.PERPLEXITY_API_KEY
-        # API 키 상태 로깅
-        if not self.api_key:
-            logger.error("PERPLEXITY_API_KEY is not set or empty")
-        elif len(self.api_key) < 10:  # API 키가 너무 짧은 경우
-            logger.error("PERPLEXITY_API_KEY appears to be invalid (too short)")
-        else:
-            logger.info("PERPLEXITY_API_KEY is loaded (length: %d)", len(self.api_key))
+        # API 키 상태 로깅 및 검증
+        if not self.api_key or not isinstance(self.api_key, str):
+            raise ValueError("PERPLEXITY_API_KEY is not set or invalid")
+        
+        # API 키 형식 검증 (Bearer 토큰 형식)
+        if not self.api_key.startswith("pplx-"):
+            logger.warning("PERPLEXITY_API_KEY does not start with 'pplx-'. This might be invalid.")
             
         self.stream_buffer_size = self.STREAM_BUFFER_SIZE
         self.stream_delay = self.STREAM_DELAY
@@ -56,18 +56,26 @@ class BaseAnalyzer:
         try:
             # 기본 파라미터와 사용자 지정 파라미터 병합
             params = {**self._get_default_params(), **kwargs}
-            params["messages"] = [{"role": "user", "content": prompt}]
+            params["messages"] = [
+                {"role": "system", "content": "You are a helpful assistant that provides accurate and detailed information."},
+                {"role": "user", "content": prompt}
+            ]
             
             # 요청 헤더 로깅 (API 키는 마스킹)
             masked_headers = self.client.headers.copy()
             masked_headers["Authorization"] = "Bearer ****" if self.api_key else "Bearer (missing)"
-            logger.info(f"Making API request with headers: {masked_headers}")
             
-            response = await self.client.post(
-                self.CHAT_ENDPOINT,
-                json=params
-            )
-            response.raise_for_status()
+            try:
+                response = await self.client.post(
+                    self.CHAT_ENDPOINT,
+                    json=params
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 401:
+                    logger.error("Authentication failed. Please check your API key.")
+                    raise ValueError("Invalid API key or authentication failed") from e
+                raise
             
             result = response.json()
             if not result or "choices" not in result:

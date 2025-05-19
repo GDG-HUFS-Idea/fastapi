@@ -49,7 +49,6 @@ async def test_project_analysis(
         
         # 분석 요청
         task_id = await project_analyzer.analyze_project(data=analysis_data)
-        logger.info(f"분석 태스크 생성됨: {task_id}")
         
         async def event_generator():
             try:
