@@ -1,11 +1,16 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import RedirectResponse
 
 from app.api.dep import get_pg_session, get_redis_session
 from app.service.auth.handle_oauth_callback import (
     HandleOAuthCallbackService,
     HandleOAuthCallbackServiceDTO,
+)
+from app.service.auth.oauth_signup import (
+    OAuthSignupService,
+    OAuthSignupServiceDTO,
+    OAuthSignupServiceResponse,
 )
 from app.service.auth.redirect_oauth import (
     RedirectOAuthService,
@@ -20,6 +25,21 @@ from app.util.enum import UserRole
 
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@auth_router.post(
+    path="/oauth/signup",
+    status_code=201,
+    response_model=OAuthSignupServiceResponse,
+    response_model_exclude_none=True,
+)
+async def oauth_signup(
+    req: Request,
+    dto: Annotated[OAuthSignupServiceDTO, Body()],
+    pg_session=Depends(get_pg_session),
+    redis_session=Depends(get_redis_session),
+):
+    return await OAuthSignupService(pg_session, redis_session).exec(req, dto)
 
 
 @auth_router.get(
