@@ -10,12 +10,10 @@ services:
         COPY . .
         ENV PYTHONPATH=/app
         CMD ["python", "app/main.py"]
-    ports:
-      - "${APP_PORT}:${APP_PORT}"
     volumes:
       - .:/app
-    env_file:
-      - .env
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       pg:
         condition: service_healthy

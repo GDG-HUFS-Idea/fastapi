@@ -10,7 +10,6 @@ class Setting(BaseSettings):
 
     google_oauth_client_id: str
     google_oauth_secret: str
-    google_oauth_callback_uri: str
 
     frontend_redirect_url: str
 
@@ -30,11 +29,10 @@ class Setting(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
-            os.path.dirname(__file__),
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             ".env",
         )
     )
 
 
-env = Setting()  # type: ignore
 env = Setting()  # type: ignore
