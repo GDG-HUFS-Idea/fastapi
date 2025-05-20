@@ -4,7 +4,7 @@ import json
 import uuid
 from typing import Dict, Any, AsyncGenerator
 
-from app.util.task_status import TaskStatus
+from app.util.enum import TaskStatus
 
 class TaskManager:
     def __init__(self):

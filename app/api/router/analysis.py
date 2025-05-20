@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from app.service.analysis.project_analyzer import ProjectAnalyzer
-from app.util.task_status import TaskStatus
+from app.util.enum import TaskStatus
 import logging
 import traceback
 import json

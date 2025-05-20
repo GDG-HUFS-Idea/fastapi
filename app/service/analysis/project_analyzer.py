@@ -7,7 +7,7 @@ from starlette.concurrency import run_in_threadpool
 from app.core.analysis.modules import reinitialize_modules
 from app.service.analysis.report_generator import generate_report
 from app.service.analysis.task_manager import TaskManager
-from app.util.task_status import TaskStatus
+from app.util.enum import TaskStatus
 from app.core.analysis.validators import ReportValidator, ProjectOverviewValidator
 from app.util.exception import ValidationException
 
