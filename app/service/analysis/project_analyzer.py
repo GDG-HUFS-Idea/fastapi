@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 import logging
-from typing import Dict, Any, AsyncGenerator
+from typing import Dict, Any, AsyncGenerator, ClassVar, Optional
 from starlette.concurrency import run_in_threadpool
 
 from app.core.analysis.modules import reinitialize_modules
@@ -14,8 +14,25 @@ from app.util.exception import ValidationException
 logger = logging.getLogger(__name__)
 
 class ProjectAnalyzer:
+    _instance: ClassVar[Optional['ProjectAnalyzer']] = None
+    _initialized: ClassVar[bool] = False
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.task_manager = TaskManager()
+        if not self._initialized:
+            self.task_manager = TaskManager()
+            self._initialized = True
+
+    @classmethod
+    def get_instance(cls) -> 'ProjectAnalyzer':
+        """싱글톤 인스턴스를 반환합니다."""
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
     async def analyze_project(self, data: Dict[str, Any]) -> str:
         """

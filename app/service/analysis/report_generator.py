@@ -4,7 +4,7 @@ import logging
 from typing import Dict, Any, Optional
 from openai import OpenAI, APIError, AuthenticationError, RateLimitError
 from app.core.config import env
-from app.core.modules.prompt_builder import PromptBuilder
+from app.core.module.prompt_builder import PromptBuilder
 from app.core.analysis.validators import ReportValidator
 
 logger = logging.getLogger(__name__)

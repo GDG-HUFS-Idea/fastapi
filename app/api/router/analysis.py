@@ -23,8 +23,8 @@ class AnalysisResponse(BaseModel):
     message: str
 
 def get_project_analyzer() -> ProjectAnalyzer:
-    """ProjectAnalyzer 인스턴스를 제공하는 의존성"""
-    return ProjectAnalyzer()
+    """ProjectAnalyzer 싱글톤 인스턴스를 제공하는 의존성"""
+    return ProjectAnalyzer.get_instance()
 
 @router.post("/test/analyze")
 async def test_project_analysis(

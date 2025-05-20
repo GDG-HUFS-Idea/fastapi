@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    # 프로젝트 분석기 싱글톤 인스턴스 초기화
+    ProjectAnalyzer.get_instance()
     yield
 
 app = FastAPI(lifespan=lifespan)
