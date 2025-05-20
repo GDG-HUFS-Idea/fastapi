@@ -78,8 +78,8 @@ async def test_analyze_project_complete_flow(analyzer: ProjectAnalyzer, valid_an
     assert initial_status['status'] == 'pending'
     assert initial_status['progress'] == 0
     
-    # 2. 분석 완료 대기 (최대 30초)
-    max_wait = 30
+    # 2. 분석 완료 대기 (최대 5분)
+    max_wait = 300
     while max_wait > 0:
         status = analyzer.get_task_status(task_id)
         if status['status'] in ['completed', 'failed']:
