@@ -12,6 +12,11 @@ from app.core.config import env
 from app.db.init import init_db
 from app.api.router.auth import auth_router
 from app.api.router.analysis import router as analysis_router
+from app.api.router.term import term_router
+from app.core.config import env
+from app.util.exception import FieldMissingException, ValidationException
+from app.api.router.auth import auth_router
+from app.core.config import env
 from app.util.exception import FieldMissingException, ValidationException
 from app.service.analysis.project_analyzer import ProjectAnalyzer
 
@@ -38,6 +43,7 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=env.session_middleware_secret)
 app.include_router(auth_router)
 app.include_router(analysis_router, tags=["analysis"])
+app.include_router(term_router)
 
 # 프로젝트 분석기 인스턴스 생성
 project_analyzer = ProjectAnalyzer()
