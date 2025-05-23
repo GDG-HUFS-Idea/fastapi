@@ -19,11 +19,3 @@ class UserRole(str, Enum):
 class PlanType(str, Enum):
     FREE = "free"
     PRO = "pro"
-
-
-class TaskStatus(str, Enum):
-    """태스크 상태를 나타내는 enum"""
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"

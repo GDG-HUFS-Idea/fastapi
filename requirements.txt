@@ -10,8 +10,8 @@ ecdsa==0.19.1
 fastapi==0.115.12
 greenlet==3.2.2
 h11==0.16.0
-httpx==0.28.1
 httpcore==1.0.9
+httpx==0.28.1
 idna==3.10
 iniconfig==2.1.0
 itsdangerous==2.2.0
@@ -22,6 +22,8 @@ pycparser==2.22
 pydantic==2.11.4
 pydantic-settings==2.9.1
 pydantic_core==2.33.2
+pytest==8.3.5
+pytest-asyncio==0.26.0
 python-dotenv==1.1.0
 python-jose==3.4.0
 redis==6.1.0
@@ -33,26 +35,4 @@ sqlmodel==0.0.24
 starlette==0.46.2
 typing-inspection==0.4.0
 typing_extensions==4.13.2
-uvicorn==0.34.0
-
-
-# AI 모듈 의존성
-openai>=1.12.0
-
-# HTTP 클라이언트
-aiohttp==3.11.16
-requests==2.32.3
-
-# 유틸리티
-passlib==1.7.4
-bcrypt==4.1.2
-python-multipart==0.0.9
-backoff==2.2.1
-
-# Testing
-pytest==8.3.5
-pytest-asyncio==0.26.0
-pytest-mock==3.12.0
-pytest-cov==4.1.0
-pytest-timeout==2.2.0
-pytest-xdist==3.5.0
+uvicorn==0.34.2

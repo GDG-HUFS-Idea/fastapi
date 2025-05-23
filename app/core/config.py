@@ -1,6 +1,5 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional, List
 
 
 class Setting(BaseSettings):
@@ -28,9 +27,6 @@ class Setting(BaseSettings):
     pg_user: str
     pg_pw: str
     pg_db: str
-    
-    PERPLEXITY_API_KEY: str
-    OPENAI_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(
@@ -40,4 +36,5 @@ class Setting(BaseSettings):
     )
 
 
+env = Setting()  # type: ignore
 env = Setting()  # type: ignore
