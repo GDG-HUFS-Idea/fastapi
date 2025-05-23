@@ -3,6 +3,7 @@ from pydantic import ValidationError
 import uvicorn
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
@@ -10,27 +11,42 @@ from starlette.exceptions import HTTPException
 from app.core.config import env
 from app.db.init import init_db
 from app.api.router.auth import auth_router
+from app.api.router.analysis import router as analysis_router
 from app.api.router.term import term_router
 from app.core.config import env
 from app.util.exception import FieldMissingException, ValidationException
 from app.api.router.auth import auth_router
 from app.core.config import env
 from app.util.exception import FieldMissingException, ValidationException
+from app.service.analysis.project_analyzer import ProjectAnalyzer
 
+import logging
+
+# httpx 로거의 레벨을 WARNING으로 설정하여 HTTP 요청 로그 숨기기
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+# 기본 로깅 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    # 프로젝트 분석기 싱글톤 인스턴스 초기화
+    ProjectAnalyzer.get_instance()
     yield
 
-
 app = FastAPI(lifespan=lifespan)
-
 app.add_middleware(SessionMiddleware, secret_key=env.session_middleware_secret)
-
 app.include_router(auth_router)
+app.include_router(analysis_router, tags=["analysis"])
 app.include_router(term_router)
 
+# 프로젝트 분석기 인스턴스 생성
+project_analyzer = ProjectAnalyzer()
 
 @app.exception_handler(RequestValidationError)
 def request_validation_exception_handler(
@@ -39,14 +55,12 @@ def request_validation_exception_handler(
     """
     FastAPI 요청 파라미터 검증 실패 시 발생하는 예외를 처리하는 핸들러
     """
-
     exc_type = exc.errors()[0].get("type", "")
 
     if "missing" in exc_type:
         raise FieldMissingException from exc
     else:
         raise ValidationException from exc
-
 
 @app.exception_handler(ValidationError)
 def validation_exception_handler(
@@ -57,15 +71,12 @@ def validation_exception_handler(
     """
     raise ValidationException from exc
 
-
 @app.exception_handler(HTTPException)
 def global_http_exception_handler(req: Request, exc: HTTPException):
     """
     FastAPI 자체에서 발생하는 모든 HTTP 예외를 처리하는 핸들러
     """
-
     return Response(status_code=exc.status_code, headers=exc.headers)
-
 
 @app.exception_handler(Exception)
 def global_exception_handler(req: Request, exc: Exception):
@@ -84,7 +95,6 @@ def global_exception_handler(req: Request, exc: Exception):
             res.headers[name] = value
 
     return res
-
 
 if __name__ == "__main__":
     uvicorn.run(
