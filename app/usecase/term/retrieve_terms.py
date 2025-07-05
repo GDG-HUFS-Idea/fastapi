@@ -52,7 +52,7 @@ class RetrieveTermsUsecase:
             )
 
         except RepositoryError as exception:
-            raise InternalServerException(f"약관 조회 중 데이터베이스 오류가 발생했습니다: {str(exception)}") from exception
+            raise InternalServerException(f"데이터베이스 조회 중 오류가 발생했습니다: {str(exception)}") from exception
         except UsecaseException:
             raise  # Usecase 예외는 그대로 전파
         except Exception as exception:

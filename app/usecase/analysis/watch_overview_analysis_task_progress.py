@@ -91,6 +91,6 @@ class WatchOverviewAnalysisTaskProgressUsecase:
                 await asyncio.sleep(self._POLLING_INTERVAL)
 
         except CacheError as exception:
-            yield f"data: {json.dumps({'error': f'캐시 조회 중 오류가 발생했습니다: {str(exception)}'})}\n\n"
+            yield f"data: {json.dumps({'error': {str(exception)}})}\n\n"
         except Exception as exception:
             yield f"data: {json.dumps({'error': f'작업 상태 조회 중 예상치 못한 오류가 발생했습니다: {str(exception)}'})}\n\n"

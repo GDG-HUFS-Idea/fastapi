@@ -61,10 +61,8 @@ class HandleOAuthCallbackUsecase:
             final_frontend_redirect_url = f"{frontend_redirect_url}?code={key}"
             return RedirectResponse(final_frontend_redirect_url)
 
-        except OAuthError as exception:
-            raise InternalServerException(f"OAuth 처리 중 오류가 발생했습니다: {str(exception)}") from exception
-        except CacheError as exception:
-            raise InternalServerException(f"캐시 처리 중 오류가 발생했습니다: {str(exception)}") from exception
+        except (OAuthError, CacheError) as exception:
+            raise InternalServerException(str(exception)) from exception
         except UsecaseException:
             raise  # Usecase 예외는 그대로 전파
         except Exception as exception:

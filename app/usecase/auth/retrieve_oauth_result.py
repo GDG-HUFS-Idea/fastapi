@@ -78,12 +78,8 @@ class RetrieveOAuthResultUsecase:
             else:
                 return await self._handle_new_user_signup_preparation(dto, oauth_profile)
 
-        except CacheError as exception:
-            raise InternalServerException(f"캐시 처리 중 오류가 발생했습니다: {str(exception)}") from exception
-        except RepositoryError as exception:
-            raise InternalServerException(f"데이터베이스 처리 중 오류가 발생했습니다: {str(exception)}") from exception
-        except JWTError as exception:
-            raise InternalServerException(f"JWT 토큰 처리 중 오류가 발생했습니다: {str(exception)}") from exception
+        except (CacheError, RepositoryError, JWTError) as exception:
+            raise InternalServerException(str(exception)) from exception
         except UsecaseException:
             raise  # Usecase 예외는 그대로 전파
         except Exception as exception:

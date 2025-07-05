@@ -69,7 +69,7 @@ class StartOverviewAnalysisTaskUsecase:
             return StartOverviewAnalysisTaskUsecaseResponse(task_id=task_id)
 
         except CacheError as exception:
-            raise InternalServerException(f"작업 캐시 저장 중 오류가 발생했습니다: {str(exception)}") from exception
+            raise InternalServerException(str(exception)) from exception
         except UsecaseException:
             raise  # Usecase 예외는 그대로 전파
         except Exception as exception:

@@ -32,6 +32,6 @@ class RedirectOAuthUsecase:
             )
 
         except OAuthError as exception:
-            raise InternalServerException(f"OAuth 리다이렉트 처리 중 오류가 발생했습니다: {str(exception)}") from exception
+            raise InternalServerException(str(exception)) from exception
         except Exception as exception:
             raise InternalServerException(f"OAuth 리다이렉트 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
