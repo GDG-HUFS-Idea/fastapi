@@ -17,3 +17,48 @@ class CacheDataCorruptedError(CacheError):  # 캐시 데이터 손상
 
 class CacheSerializationError(CacheError):  # 직렬화/역직렬화 오류
     pass
+
+
+# AuthenticationError
+class AuthError(Exception):  # 모든 인증 오류의 기본 클래스
+    pass
+
+
+class JWTError(AuthError):  # JWT 관련 모든 오류
+    pass
+
+
+class JWTEncodeError(JWTError):  # JWT 토큰 생성 실패
+    pass
+
+
+class JWTDecodeError(JWTError):  # JWT 토큰 파싱 실패
+    pass
+
+
+class JWTExpiredError(JWTError):  # JWT 토큰 만료
+    pass
+
+
+class JWTInvalidError(JWTError):  # JWT 토큰 무효
+    pass
+
+
+class OAuthError(AuthError):  # OAuth 관련 모든 오류
+    pass
+
+
+class OAuthRedirectError(OAuthError):  # OAuth 리다이렉트 실패
+    pass
+
+
+class OAuthStateError(OAuthError):  # OAuth 상태 불일치
+    pass
+
+
+class OAuthProfileError(OAuthError):  # OAuth 프로필 조회 실패
+    pass
+
+
+class OAuthDataCorruptedError(OAuthError):  # OAuth 응답 데이터 손상
+    pass
