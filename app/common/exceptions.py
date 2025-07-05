@@ -1,4 +1,7 @@
 # RepositoryError
+from fastapi import HTTPException
+
+
 class RepositoryError(Exception):  # 모든 Repository 예외의 기본 클래스
     pass
 
@@ -103,4 +106,56 @@ class ModelValidationError(AnalysisServiceError):  # Pydantic 모델 검증 오�
 
 
 class PromptGenerationError(AnalysisServiceError):  # 프롬프트 생성 오류
+    pass
+
+
+# UsecaseError
+class UsecaseException(HTTPException):  # 모든 Usecase 오류의 기본 클래스
+    def __init__(self, detail: str, status_code: int = 500):
+        super().__init__(status_code=status_code, detail=detail)
+
+
+class InvalidInputException(UsecaseException):  # 잘못된 입력 데이터
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=400)
+
+
+class UnauthorizedException(UsecaseException):  # 인증 실패
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=401)
+
+
+class ForbiddenException(UsecaseException):  # 권한 없음
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=403)
+
+
+class NotFoundException(UsecaseException):  # 리소스를 찾을 수 없음
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=404)
+
+
+class BusinessLogicException(UsecaseException):  # 비즈니스 로직 오류
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=422)
+
+
+class InternalServerException(UsecaseException):  # 내부 서버 오류
+    def __init__(self, detail: str):
+        super().__init__(detail=detail, status_code=500)
+
+
+class HostMismatchException(ForbiddenException):  # 호스트 불일치
+    pass
+
+
+class RequiredTermNotAgreedException(BusinessLogicException):  # 필수 약관 미동의
+    pass
+
+
+class InvalidTermException(BusinessLogicException):  # 유효하지 않은 약관
+    pass
+
+
+class MissingTermException(BusinessLogicException):  # 누락된 약관
     pass
