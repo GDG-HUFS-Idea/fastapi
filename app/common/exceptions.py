@@ -1,3 +1,24 @@
+# RepositoryError
+class RepositoryError(Exception):  # 모든 Repository 예외의 기본 클래스
+    pass
+
+
+class DatabaseConnectionError(RepositoryError):  # 데이터베이스 연결/트랜잭션 오류
+    pass
+
+
+class UserRepositoryError(RepositoryError):  # User 관련 모든 오류
+    pass
+
+
+class TermRepositoryError(RepositoryError):  # Term 관련 모든 오류
+    pass
+
+
+class UserAgreementRepositoryError(RepositoryError):  # UserAgreement 관련 모든 오류
+    pass
+
+
 # CacheError
 class CacheError(Exception):  # Cache 관련 모든 오류의 기본 클래스
     pass
