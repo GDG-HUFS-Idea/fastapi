@@ -5,19 +5,19 @@ from pydantic import BaseModel
 
 from app.common.enums import TaskStatus
 from app.core.cache import get_redis_connection
-from app.service.analyzer.modules.business_case_extraction import (
+from app.service.analyzer.module.business_case_extraction import (
     BusinessCaseExtractionService,
     BusinessCaseExtractionServiceResponse,
 )
-from app.service.analyzer.modules.limitation_analysis import LimitationAnalysisService
-from app.service.analyzer.modules.opportunity_analysis import OpportunityAnalysisService
-from app.service.analyzer.modules.similar_service_research import (
+from app.service.analyzer.module.limitation_analysis import LimitationAnalysisService
+from app.service.analyzer.module.opportunity_analysis import OpportunityAnalysisService
+from app.service.analyzer.module.similar_service_research import (
     SimilarServiceResearchService,
     SimilarServiceResearchServiceResponse,
 )
-from app.service.analyzer.modules.idea_summation import IdeaSummationService
-from app.service.analyzer.modules.market_research import MarketResearchService, MarketResearchServiceResponse
-from app.service.analyzer.modules.team_requirement_analysis import TeamRequirementAnalysisService
+from app.service.analyzer.module.idea_summation import IdeaSummationService
+from app.service.analyzer.module.market_research import MarketResearchService, MarketResearchServiceResponse
+from app.service.analyzer.module.team_requirement_analysis import TeamRequirementAnalysisService
 from app.service.cache.task_progress import TaskProgressCache
 
 logger = logging.getLogger(__name__)
