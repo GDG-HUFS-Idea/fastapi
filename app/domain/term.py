@@ -12,6 +12,7 @@ class Term(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     type: TermType = Field(unique=True, nullable=False)
     is_required: bool = Field(nullable=False)
+    is_active: bool = Field(nullable=False)
     title: str = Field(nullable=False)
     content: str = Field(nullable=False)
     version: str = Field(nullable=False)

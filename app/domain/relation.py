@@ -2,6 +2,7 @@ from sqlmodel import Relationship
 
 
 def setup_relations():
+    from app.domain.deletion_log import DeletionLog
     from app.domain.user import User
     from app.domain.subscription import Subscription
     from app.domain.term import Term
