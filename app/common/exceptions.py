@@ -62,3 +62,24 @@ class OAuthProfileError(OAuthError):  # OAuth 프로필 조회 실패
 
 class OAuthDataCorruptedError(OAuthError):  # OAuth 응답 데이터 손상
     pass
+
+
+# AnalyzerError
+class AnalysisServiceError(Exception):  # 모든 분석 서비스 오류의 기본 클래스
+    pass
+
+
+class ExternalAPIError(AnalysisServiceError):  # 외부 API 호출 오류
+    pass
+
+
+class JSONValidationError(ValueError, AnalysisServiceError):  # JSON 형식 검증 오류
+    pass
+
+
+class ModelValidationError(AnalysisServiceError):  # Pydantic 모델 검증 오류
+    pass
+
+
+class PromptGenerationError(AnalysisServiceError):  # 프롬프트 생성 오류
+    pass
