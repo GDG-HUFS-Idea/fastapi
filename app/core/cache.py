@@ -6,7 +6,7 @@ from app.core.config import setting
 _client = None
 
 
-async def get_redis_connection() -> Redis:
+async def get_static_redis_session() -> Redis:
     global _client
 
     if _client is None:

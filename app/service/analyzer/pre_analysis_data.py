@@ -4,7 +4,7 @@ import random
 from pydantic import BaseModel
 
 from app.common.enums import TaskStatus
-from app.core.cache import get_redis_connection
+from app.core.cache import get_static_redis_session
 from app.service.analyzer.module.business_case_extraction import (
     BusinessCaseExtractionService,
     BusinessCaseExtractionServiceResponse,
@@ -52,7 +52,7 @@ class PreAnalysisDataService:
         solution: str,
     ) -> PreAnalysisDataServiceResponse:
         try:
-            redis = await get_redis_connection()
+            redis = await get_static_redis_session()
             self._task_progress_cache = TaskProgressCache(session=redis)
 
             # 1. 비즈니스 케이스(5개) 추출

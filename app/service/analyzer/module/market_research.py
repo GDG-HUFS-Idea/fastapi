@@ -122,7 +122,7 @@ class MarketResearchService:
                 max_attempts=self._MAX_ATTEMPTS,
             )
 
-        except JSONValidationError as exception:  # validate_json에서 발생하는 통합 예외
+        except JSONValidationError as exception:
             raise JSONValidationError(f"시장 조사 JSON 형식 검증 오류가 발생했습니다: {str(exception)}") from exception
         except ValidationError as exception:
             raise ModelValidationError(f"시장 조사 모델 검증 오류가 발생했습니다: {str(exception)}") from exception

@@ -7,8 +7,8 @@ from tiktoken import encoding_for_model
 from typing import List, Union
 from pydantic import BaseModel, Field
 
-from app.common.utils import retry
-from app.core.cache import get_redis_connection
+from app.common.utils import retry, validate_json
+from app.core.cache import get_static_redis_session
 from app.external.openai import OpenAIClient
 from app.service.analyzer.pre_analysis_data import PreAnalysisDataServiceResponse
 from app.service.cache.task_progress import TaskProgressCache
@@ -168,7 +168,7 @@ class OverviewAnalysisService:
     _OPENAI_MODEL = "gpt-4o-mini"
     _MAX_ATTEMPTS = 3
     _TEMPERATURE = 0.2
-    _MAX_TOKENS = 4000
+    _MAX_TOKENS = 5000
     _TIMEOUT_SECONDS = 60 * 5
 
     def __init__(
@@ -182,7 +182,7 @@ class OverviewAnalysisService:
         pre_analysis_data: PreAnalysisDataServiceResponse,
     ) -> OverviewAnalysisServiceResponse:
         try:
-            redis = await get_redis_connection()
+            redis = await get_static_redis_session()
             self._task_progress_cache = TaskProgressCache(session=redis)
 
             # 1. 본 분석 준비
@@ -193,15 +193,15 @@ class OverviewAnalysisService:
                 message="본 분석 준비 중입니다...",
             )
 
+            base_progress = round(random.uniform(0.45, 0.55), 2)
             encoding = encoding_for_model(self._OPENAI_MODEL)
             estimated_output_tokens = self._MAX_TOKENS * 1.1
-            base_progress = round(random.uniform(0.45, 0.55), 2)
             user_prompt = self._generate_prompt(pre_analysis_data)
             system_prompt = dedent(
                 """
-                당신은 비즈니스 분석 전문가입니다. 
+                당신은 비즈니스 분석 전문가입니다.
                 객관적인 데이터를 기반으로 사업 아이디어를 분석하고, 점수를 산출하세요.
-                추가 설명이나 불필요한 문장은 포함하지 마세요. 
+                추가 설명이나 불필요한 문장은 포함하지 마세요.
                 반드시 중괄호 { }로 시작하는 순수 JSON을 반환해야 합니다.
                 """
             ).strip()
@@ -216,7 +216,7 @@ class OverviewAnalysisService:
 
             async def operation():
                 total_content = ""
-                total_tokens = 0
+                last_progress = base_progress
 
                 async for content_piece in self._openai_client.stream(
                     user_prompt,
@@ -226,21 +226,26 @@ class OverviewAnalysisService:
                     max_tokens=self._MAX_TOKENS,
                 ):
                     total_content += content_piece
-                    total_tokens += len(encoding.encode(content_piece))
 
+                    # 예상 토큰 수에 기반한 진행률 계산
+                    total_tokens = len(encoding.encode(total_content))
                     token_ratio = min(total_tokens / estimated_output_tokens, 1.0)
+
                     progress = round(base_progress + token_ratio * (0.95 - base_progress), 2)
 
-                    logger.info(f"본 분석 진행 중 ({progress * 100:.2f}%)")
-                    await self._task_progress_cache.update_partial(
-                        key=task_id,
-                        progress=progress,
-                        message="분석 결과를 생성하고 있습니다...",
-                    )
+                    # 진행률이 이전보다 클 때만 업데이트
+                    if progress > last_progress:
+                        logger.info(f"본 분석 진행 중 ({int(progress * 100)}%)")
+                        await self._task_progress_cache.update_partial(
+                            key=task_id,
+                            progress=progress,
+                            message="분석 결과를 생성하고 있습니다...",
+                        )
+                        last_progress = progress
 
-                parsed_data = json.loads(total_content.strip())
-                logger.info(f"본 분석 결과 : {parsed_data}")
-                return OverviewAnalysisServiceResponse.model_validate(parsed_data)
+                logger.info(total_content.strip())
+                parsed_content = json.loads(validate_json(total_content.strip()))
+                return OverviewAnalysisServiceResponse.model_validate(parsed_content)
 
             return await retry(
                 function=operation,
@@ -552,38 +557,38 @@ class OverviewAnalysisService:
                 {"category": "기술적 제약", "details": "구현 난이도, 필요 기술", "impact": "영향", "solution": "대응 방안"}
             ],
             "requiredTeam": {
-            "roles": [
-                {
-                    "title": "직책명",
-                    "skills": "필요 역량 및 경력 요건 상세",
-                    "responsibilities": "담당 업무 범위 구체적 설명",
-                    "priority": "채용 우선순위(1-5 단계)",
-                },
-                {
-                    "title": "직책명",
-                    "skills": "필요 역량 및 경력 요건 상세",
-                    "responsibilities": "담당 업무 범위 구체적 설명",
-                    "priority": "채용 우선순위(1-5 단계)",
-                },
-                {
-                    "title": "직책명",
-                    "skills": "필요 역량 및 경력 요건 상세",
-                    "responsibilities": "담당 업무 범위 구체적 설명",
-                    "priority": "채용 우선순위(1-5 단계)",
-                },
-                {
-                    "title": "직책명",
-                    "skills": "필요 역량 및 경력 요건 상세",
-                    "responsibilities": "담당 업무 범위 구체적 설명",
-                    "priority": "채용 우선순위(1-5 단계)",
-                },
-                {
-                    "title": "직책명",
-                    "skills": "필요 역량 및 경력 요건 상세",
-                    "responsibilities": "담당 업무 범위 구체적 설명",
-                    "priority": "채용 우선순위(1-5 단계)",
-                }
-            ],
+                "roles": [
+                    {
+                        "title": "직책명",
+                        "skills": "필요 역량 및 경력 요건 상세",
+                        "responsibilities": "담당 업무 범위 구체적 설명",
+                        "priority": "채용 우선순위(1-5 단계)",
+                    },
+                    {
+                        "title": "직책명",
+                        "skills": "필요 역량 및 경력 요건 상세",
+                        "responsibilities": "담당 업무 범위 구체적 설명",
+                        "priority": "채용 우선순위(1-5 단계)",
+                    },
+                    {
+                        "title": "직책명",
+                        "skills": "필요 역량 및 경력 요건 상세",
+                        "responsibilities": "담당 업무 범위 구체적 설명",
+                        "priority": "채용 우선순위(1-5 단계)",
+                    },
+                    {
+                        "title": "직책명",
+                        "skills": "필요 역량 및 경력 요건 상세",
+                        "responsibilities": "담당 업무 범위 구체적 설명",
+                        "priority": "채용 우선순위(1-5 단계)",
+                    },
+                    {
+                        "title": "직책명",
+                        "skills": "필요 역량 및 경력 요건 상세",
+                        "responsibilities": "담당 업무 범위 구체적 설명",
+                        "priority": "채용 우선순위(1-5 단계)",
+                    }
+                ],
             },
                 "scores": {
                     "market": "주어진 데이터를 기반으로 시장성 점수 산출 (0-100 사이 값)",
