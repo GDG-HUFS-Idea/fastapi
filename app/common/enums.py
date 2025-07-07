@@ -34,7 +34,7 @@ class SubscriptionStatus(str, Enum):
 
 
 class ProjectStatus(str, Enum):
-    DRAFT = "draft"
+    IN_PROGRESS = "in_progress"
     ANALYZED = "analyzed"
 
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, SQLModel
 
@@ -10,7 +10,7 @@ class Term(SQLModel, table=True):
     __tablename__ = "term"  # type: ignore
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    type: TermType = Field(unique=True, nullable=False)
+    type: TermType = Field(nullable=False)
     is_required: bool = Field(nullable=False)
     is_active: bool = Field(nullable=False)
     title: str = Field(nullable=False)

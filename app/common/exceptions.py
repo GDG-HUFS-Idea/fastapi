@@ -22,6 +22,30 @@ class UserAgreementRepositoryError(RepositoryError):  # UserAgreement 관련 모
     pass
 
 
+class ProjectRepositoryError(RepositoryError):  # Project 관련 모든 오류
+    pass
+
+
+class ProjectIdeaRepositoryError(RepositoryError):  # ProjectIdea 관련 모든 오류
+    pass
+
+
+class OverviewAnalysisRepositoryError(RepositoryError):  # OverviewAnalysis 관련 모든 오류
+    pass
+
+
+class MarketResearchRepositoryError(RepositoryError):  # MarketResearch 관련 모든 오류
+    pass
+
+
+class MarketTrendRepositoryError(RepositoryError):  # MarketTrend 관련 모든 오류
+    pass
+
+
+class RevenueBenchmarkRepositoryError(RepositoryError):  # RevenueBenchmark 관련 모든 오류
+    pass
+
+
 # CacheError
 class CacheError(Exception):  # Cache 관련 모든 오류의 기본 클래스
     pass
