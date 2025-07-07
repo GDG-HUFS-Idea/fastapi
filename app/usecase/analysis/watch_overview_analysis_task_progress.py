@@ -1,17 +1,26 @@
 import asyncio
 import json
 from typing import AsyncGenerator, Optional
-from fastapi import Request
+from fastapi import Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from sqlmodel import Field
 
 from app.common.enums import TaskStatus
+from app.service.auth.jwt import Payload
 from app.service.cache.task_progress import TaskProgressCache
-from app.common.exceptions import UsecaseException, UnauthorizedException, InternalServerException, CacheError
+from app.common.exceptions import (
+    ForbiddenException,
+    NotFoundException,
+    UsecaseException,
+    UnauthorizedException,
+    InternalServerException,
+    CacheError,
+)
 
 
 class WatchOverviewAnalysisTaskProgressUsecaseDTO(BaseModel):
-    task_id: str
+    task_id: str = Field(Query())
 
 
 class WatchOverviewAnalysisTaskProgressUsecase:
@@ -25,12 +34,20 @@ class WatchOverviewAnalysisTaskProgressUsecase:
         self,
         request: Request,
         dto: WatchOverviewAnalysisTaskProgressUsecaseDTO,
+        payload: Payload,
     ) -> StreamingResponse:
         try:
             # 1. 클라이언트 호스트 정보 조회
             host: Optional[str] = getattr(request.client, "host", None)
             if not host:
                 raise UnauthorizedException("클라이언트 호스트 정보를 조회할 수 없습니다")
+
+            task_progress = await self._task_progress_cache.get(dto.task_id)
+            if not task_progress:
+                raise NotFoundException(f"해당 작업 ID({dto.task_id})를 찾을 수 없습니다")
+
+            if task_progress.host != host or task_progress.user_id != payload.id:
+                raise ForbiddenException("해당 작업에 대한 접근 권한이 없습니다")
 
             # 2. 스트리밍 응답 생성
             return StreamingResponse(

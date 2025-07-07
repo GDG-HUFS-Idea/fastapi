@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 import os
 from functools import lru_cache
 from textwrap import dedent
@@ -18,11 +20,26 @@ async def init_database() -> None:
         await setup_deletion_log_trigger(connection=connection)
 
 
+@asynccontextmanager
+async def get_static_db_session() -> AsyncGenerator[AsyncSession, None]:
+    sessionmaker = get_sessionmaker()
+
+    async with sessionmaker() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
 @lru_cache(maxsize=1)
 def get_engine() -> AsyncEngine:
     return create_async_engine(
         url=get_pg_url(),
-        echo=True,
+        echo=False,
         future=True,
         pool_pre_ping=True,
         pool_recycle=300,

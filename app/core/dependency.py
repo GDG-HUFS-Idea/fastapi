@@ -7,6 +7,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.common.exceptions import InternalServerException, JWTDecodeError, JWTExpiredError, JWTInvalidError, UnauthorizedException
 from app.core.config import setting
 from app.core.database import get_sessionmaker
+from app.repository.market_research import MarketResearchRepository
+from app.repository.overview_analysis import OverviewAnalysisRepository
+from app.repository.project import ProjectRepository
+from app.repository.project_idea import ProjectIdeaRepository
 from app.repository.term import TermRepository
 from app.repository.user_agreement import UserAgreementRepository
 from app.repository.user import UserRepository
@@ -39,7 +43,7 @@ async def get_redis_session() -> AsyncGenerator[Redis, None]:
         await client.aclose()
 
 
-async def get_pg_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     sessionmaker = get_sessionmaker()
 
     async with sessionmaker() as session:
@@ -83,16 +87,32 @@ def get_oauth_profile_cache(session: Redis = Depends(get_redis_session)):
 
 
 # Repositories
-def get_user_repository(session: AsyncSession = Depends(get_pg_session)):
+def get_user_repository(session: AsyncSession = Depends(get_db_session)):
     return UserRepository(session)
 
 
-def get_term_repository(session: AsyncSession = Depends(get_pg_session)):
+def get_term_repository(session: AsyncSession = Depends(get_db_session)):
     return TermRepository(session)
 
 
-def get_user_agreement_repository(session: AsyncSession = Depends(get_pg_session)):
+def get_user_agreement_repository(session: AsyncSession = Depends(get_db_session)):
     return UserAgreementRepository(session)
+
+
+def get_project_repository(session: AsyncSession = Depends(get_db_session)):
+    return ProjectRepository(session)
+
+
+def get_project_idea_repository(session: AsyncSession = Depends(get_db_session)):
+    return ProjectIdeaRepository(session)
+
+
+def get_overview_analysis_repository(session: AsyncSession = Depends(get_db_session)):
+    return OverviewAnalysisRepository(session)
+
+
+def get_market_research_repository(session: AsyncSession = Depends(get_db_session)):
+    return MarketResearchRepository(session)
 
 
 # Services
@@ -146,7 +166,11 @@ def get_start_overview_analysis_task_usecase(
     overview_analysis_service: OverviewAnalysisService = Depends(get_overview_analysis_service),
     task_progress_cache: TaskProgressCache = Depends(get_task_progress_cache),
 ):
-    return StartOverviewAnalysisTaskUsecase(pre_analysis_data_service, overview_analysis_service, task_progress_cache)
+    return StartOverviewAnalysisTaskUsecase(
+        pre_analysis_data_service,
+        overview_analysis_service,
+        task_progress_cache,
+    )
 
 
 def get_watch_overview_analysis_task_progress_usecase(task_progress_cache: TaskProgressCache = Depends(get_task_progress_cache)):

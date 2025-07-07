@@ -1,9 +1,13 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request
-from fastapi.params import Body
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import StreamingResponse
 
-from app.core.dependency import get_start_overview_analysis_task_usecase, get_watch_overview_analysis_task_progress_usecase
+from app.core.dependency import (
+    get_current_user,
+    get_start_overview_analysis_task_usecase,
+    get_watch_overview_analysis_task_progress_usecase,
+)
+from app.service.auth.jwt import Payload
 from app.usecase.analysis.start_overview_analysis_task import (
     StartOverviewAnalysisTaskUsecase,
     StartOverviewAnalysisTaskUsecaseDTO,
@@ -27,8 +31,9 @@ async def start_overview_analysis_task(
     request: Request,
     dto: Annotated[StartOverviewAnalysisTaskUsecaseDTO, Body()],
     usecase: StartOverviewAnalysisTaskUsecase = Depends(get_start_overview_analysis_task_usecase),
+    payload: Payload = Depends(get_current_user),
 ):
-    return await usecase.execute(request, dto)
+    return await usecase.execute(request, dto, payload)
 
 
 @analysis_router.get(
@@ -39,5 +44,6 @@ async def watch_overview_analysis_task_progress(
     request: Request,
     dto: Annotated[WatchOverviewAnalysisTaskProgressUsecaseDTO, Depends()],
     usecase: WatchOverviewAnalysisTaskProgressUsecase = Depends(get_watch_overview_analysis_task_progress_usecase),
+    payload: Payload = Depends(get_current_user),
 ):
-    return await usecase.execute(request, dto)
+    return await usecase.execute(request, dto, payload)
