@@ -70,7 +70,7 @@ class PreAnalysisDataService:
             logger.info(f"아이디어 요약 중")
             await self._task_progress_cache.update_partial(
                 key=task_id,
-                progress=round(random.uniform(0.06, 0.17), 2),
+                progress=round(random.uniform(0.06, 0.12), 2),
                 message="아이디어 요약 중입니다...",
             )
             idea = await self._idea_summation_service.execute(problem, solution)
@@ -79,7 +79,7 @@ class PreAnalysisDataService:
             logger.info(f"사전 분석 데이터 준비 중")
             await self._task_progress_cache.update_partial(
                 key=task_id,
-                progress=round(random.uniform(0.17, 0.33), 2),
+                progress=round(random.uniform(0.12, 0.17), 2),
                 message="사전 분석 데이터 준비 중입니다...",
             )
             (similar_service, market, limitation, opportunity, team_requirement) = await asyncio.gather(

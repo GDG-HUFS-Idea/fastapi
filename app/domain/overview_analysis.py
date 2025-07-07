@@ -26,18 +26,18 @@ class _SupportProgram(BaseModel):
 
 
 class _Activity(BaseModel):
-    online: List[str]
+    online: str
 
 
 class _Touchpoint(BaseModel):
-    online: List[str]
-    offline: List[str]
+    online: str
+    offline: str
 
 
 class _TargetMarket(BaseModel):
     segment: str
-    reasons: List[str]
-    value_props: List[str]
+    reason: str
+    value_prop: str
     activities: _Activity
     touchpoints: _Touchpoint
 
@@ -59,7 +59,7 @@ class _MarketingPlan(BaseModel):
 
 class _ValueProposition(BaseModel):
     main: str
-    detail: List[str]
+    detail: str
 
 
 class _Priority(BaseModel):

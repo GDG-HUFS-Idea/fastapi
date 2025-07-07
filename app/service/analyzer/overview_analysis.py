@@ -168,7 +168,7 @@ class OverviewAnalysisService:
     _OPENAI_MODEL = "gpt-4o-mini"
     _MAX_ATTEMPTS = 3
     _TEMPERATURE = 0.2
-    _MAX_TOKENS = 5000
+    _MAX_TOKENS = 4500
     _TIMEOUT_SECONDS = 60 * 5
 
     def __init__(
@@ -189,11 +189,11 @@ class OverviewAnalysisService:
             logger.info("본 분석 준비 중")
             await self._task_progress_cache.update_partial(
                 key=task_id,
-                progress=round(random.uniform(0.33, 0.45), 2),
+                progress=round(random.uniform(0.17, 0.27), 2),
                 message="본 분석 준비 중입니다...",
             )
 
-            base_progress = round(random.uniform(0.45, 0.55), 2)
+            base_progress = round(random.uniform(0.27, 0.40), 2)
             encoding = encoding_for_model(self._OPENAI_MODEL)
             estimated_output_tokens = self._MAX_TOKENS * 1.1
             user_prompt = self._generate_prompt(pre_analysis_data)

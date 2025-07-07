@@ -329,14 +329,14 @@ class StartOverviewAnalysisTaskUsecase:
                 "target_markets": [
                     {
                         "segment": target.segment,
-                        "reasons": self._ensure_list(target.reasons),
-                        "value_props": self._ensure_list(target.interest_factors),
+                        "reason": target.reasons,
+                        "value_prop": target.interest_factors,
                         "activities": {
-                            "online": self._ensure_list(target.online_activities),
+                            "online": target.online_activities,
                         },
                         "touchpoints": {
-                            "online": self._ensure_list(target.online_touchpoints),
-                            "offline": self._ensure_list(target.offline_touchpoints),
+                            "online": target.online_touchpoints,
+                            "offline": target.offline_touchpoints,
                         },
                     }
                     for target in raw_overview_analysis.target_audience
@@ -357,7 +357,7 @@ class StartOverviewAnalysisTaskUsecase:
                     "summary": raw_overview_analysis.business_model.tagline,
                     "value_proposition": {
                         "main": raw_overview_analysis.business_model.value,
-                        "detail": self._ensure_list(raw_overview_analysis.business_model.value_details),
+                        "detail": raw_overview_analysis.business_model.value_details,
                     },
                     "revenue_stream": raw_overview_analysis.business_model.revenue_structure,
                     "priorities": [
