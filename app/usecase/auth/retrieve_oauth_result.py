@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import List, Optional, cast
-from fastapi import Request
+from fastapi import Query, Request
 from pydantic import BaseModel, Field
 
 from app.common.enums import UserRole
@@ -23,7 +23,7 @@ from app.common.exceptions import (
 
 
 class RetrieveOAuthResultUsecaseDTO(BaseModel):
-    code: str = Field(min_length=10)
+    code: str = Field(Query(), min_length=10)
 
 
 class RetrieveOAuthResultUsecaseResponse(BaseModel):

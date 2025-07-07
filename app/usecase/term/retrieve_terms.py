@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 from app.common.enums import TermType
@@ -8,17 +9,17 @@ from app.common.exceptions import UsecaseException, NotFoundException, InternalS
 
 
 class RetrieveTermsUsecaseDTO(BaseModel):
-    ids: List[int] = Field()
+    ids: List[int] = Field(Query())
 
 
 class _Term(BaseModel):
     id: int
     title: str
     type: TermType
-    content: str
+    version: str
     is_required: bool
+    content: str
     created_at: datetime
-    updated_at: datetime
 
 
 class RetrieveTermsUsecaseResponse(BaseModel):
@@ -27,7 +28,10 @@ class RetrieveTermsUsecaseResponse(BaseModel):
 
 
 class RetrieveTermsUsecase:
-    def __init__(self, term_repository: TermRepository) -> None:
+    def __init__(
+        self,
+        term_repository: TermRepository,
+    ) -> None:
         self._term_repository = term_repository
 
     async def execute(

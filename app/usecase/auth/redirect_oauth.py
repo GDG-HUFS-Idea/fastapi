@@ -1,4 +1,4 @@
-from fastapi import Request
+from fastapi import Path, Query, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
@@ -8,8 +8,8 @@ from app.common.exceptions import InternalServerException, OAuthError
 
 
 class RedirectOAuthUsecaseDTO(BaseModel):
-    frontend_redirect_url: str = Field()
-    provider: OauthProvider = Field()
+    provider: OauthProvider = Field(Path())
+    frontend_redirect_url: str = Field(Query())
 
 
 class RedirectOAuthUsecase:

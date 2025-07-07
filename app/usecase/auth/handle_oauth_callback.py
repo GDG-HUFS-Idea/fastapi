@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import Optional
-from fastapi import Request
+from fastapi import Path, Query, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
@@ -18,8 +18,8 @@ from app.common.exceptions import (
 
 
 class HandleOAuthCallbackUsecaseDTO(BaseModel):
-    provider: OauthProvider = Field()
-    code: str = Field(min_length=10)
+    provider: OauthProvider = Field(Path())
+    code: str = Field(Query(), min_length=10)
 
 
 class HandleOAuthCallbackUsecase:
