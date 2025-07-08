@@ -30,7 +30,7 @@ class ProjectRepository:
 
     async def find_many_by_user_id(
         self,
-        user_id: str,
+        user_id: int,
         limit: int,
         offset: int,
     ) -> List[Project]:

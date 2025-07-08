@@ -29,6 +29,7 @@ from app.usecase.auth.handle_oauth_callback import HandleOAuthCallbackUsecase
 from app.usecase.auth.oauth_sign_up import OAuthSignUpUsecase
 from app.usecase.auth.redirect_oauth import RedirectOAuthUsecase
 from app.usecase.auth.retrieve_oauth_result import RetrieveOAuthResultUsecase
+from app.usecase.project.retrieve_my_projects import RetrieveMyProjectsUsecase
 from app.usecase.term.retrieve_terms import RetrieveTermsUsecase
 
 
@@ -194,3 +195,9 @@ def get_retrieve_overview_analysis_usecase(
         market_trend_repository,
         revenue_benchmark_repository,
     )
+
+
+def get_retrieve_my_projects_usecase(
+    project_repository: ProjectRepository = Depends(get_project_repository),
+):
+    return RetrieveMyProjectsUsecase(project_repository)
