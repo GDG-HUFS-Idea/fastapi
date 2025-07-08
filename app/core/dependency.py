@@ -8,9 +8,11 @@ from app.common.exceptions import InternalServerException, JWTDecodeError, JWTEx
 from app.core.config import setting
 from app.core.database import get_sessionmaker
 from app.repository.market_research import MarketResearchRepository
+from app.repository.market_trend import MarketTrendRepository
 from app.repository.overview_analysis import OverviewAnalysisRepository
 from app.repository.project import ProjectRepository
 from app.repository.project_idea import ProjectIdeaRepository
+from app.repository.revenue_benchmark import RevenueBenchmarkRepository
 from app.repository.term import TermRepository
 from app.repository.user_agreement import UserAgreementRepository
 from app.repository.user import UserRepository
@@ -20,6 +22,7 @@ from app.service.auth.jwt import JWTService, Payload
 from app.service.auth.oauth import OAuthService
 from app.service.cache.oauth_profile import OAuthProfileCache
 from app.service.cache.task_progress import TaskProgressCache
+from app.usecase.analysis.retrieve_overview_analysis import RetrieveOverviewAnalysisUsecase
 from app.usecase.analysis.start_overview_analysis_task import StartOverviewAnalysisTaskUsecase
 from app.usecase.analysis.watch_overview_analysis_task_progress import WatchOverviewAnalysisTaskProgressUsecase
 from app.usecase.auth.handle_oauth_callback import HandleOAuthCallbackUsecase
@@ -175,3 +178,19 @@ def get_start_overview_analysis_task_usecase(
 
 def get_watch_overview_analysis_task_progress_usecase(task_progress_cache: TaskProgressCache = Depends(get_task_progress_cache)):
     return WatchOverviewAnalysisTaskProgressUsecase(task_progress_cache)
+
+
+def get_retrieve_overview_analysis_usecase(
+    project_repository: ProjectRepository = Depends(get_project_repository),
+    overview_analysis_repository: OverviewAnalysisRepository = Depends(get_overview_analysis_repository),
+    market_research_repository: MarketResearchRepository = Depends(get_market_research_repository),
+    market_trend_repository: MarketTrendRepository = Depends(get_market_research_repository),
+    revenue_benchmark_repository: RevenueBenchmarkRepository = Depends(get_market_research_repository),
+):
+    return RetrieveOverviewAnalysisUsecase(
+        project_repository,
+        overview_analysis_repository,
+        market_research_repository,
+        market_trend_repository,
+        revenue_benchmark_repository,
+    )

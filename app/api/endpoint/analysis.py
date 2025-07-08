@@ -4,6 +4,7 @@ from fastapi.responses import StreamingResponse
 
 from app.core.dependency import (
     get_current_user,
+    get_retrieve_overview_analysis_usecase,
     get_start_overview_analysis_task_usecase,
     get_watch_overview_analysis_task_progress_usecase,
 )
@@ -16,6 +17,12 @@ from app.usecase.analysis.start_overview_analysis_task import (
 from app.usecase.analysis.watch_overview_analysis_task_progress import (
     WatchOverviewAnalysisTaskProgressUsecase,
     WatchOverviewAnalysisTaskProgressUsecaseDTO,
+)
+from app.service.auth.jwt import Payload
+from app.usecase.analysis.retrieve_overview_analysis import (
+    RetrieveOverviewAnalysisUsecase,
+    RetrieveOverviewAnalysisUsecaseDTO,
+    RetrieveOverviewAnalysisUsecaseResponse,
 )
 
 analysis_router = APIRouter(prefix="/analysis", tags=["analysis"])
@@ -47,3 +54,15 @@ async def watch_overview_analysis_task_progress(
     payload: Payload = Depends(get_current_user),
 ):
     return await usecase.execute(request, dto, payload)
+
+
+@analysis_router.get(
+    path="/overview",
+    response_model=RetrieveOverviewAnalysisUsecaseResponse,
+)
+async def retrieve_overview_analysis(
+    dto: Annotated[RetrieveOverviewAnalysisUsecaseDTO, Depends()],
+    usecase: RetrieveOverviewAnalysisUsecase = Depends(get_retrieve_overview_analysis_usecase),
+    payload: Payload = Depends(get_current_user),
+):
+    return await usecase.execute(dto, payload)
