@@ -127,12 +127,14 @@ class StartOverviewAnalysisTaskUsecase:
                     status=ProjectStatus.IN_PROGRESS,
                 )
                 await project_repository.save(project)
+                await session.commit()
 
                 # 2. 사전 분석 실행
                 pre_analysis_data = await self._pre_analysis_data_service.analyze(task_id, problem, solution)
 
                 project.name = pre_analysis_data.idea
                 await project_repository.save(project)
+                await session.commit()
 
                 # 3. 본 분석 실행
                 raw_overview_analysis = await self._overview_analysis_stream_service.analyze(task_id, pre_analysis_data)
