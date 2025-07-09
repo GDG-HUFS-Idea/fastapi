@@ -1,34 +1,25 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional, List
 
 
 class Setting(BaseSettings):
-    app_port: int
+    APP_PORT: int
 
-    session_middleware_secret: str
-    jwt_secret: str
+    SESSION_MIDDLEWARE_SECRET: str
+    JWT_SECRET: str
 
-    google_oauth_client_id: str
-    google_oauth_secret: str
-    google_oauth_callback_uri: str
+    GOOGLE_OAUTH_CLIENT_ID: str
+    GOOGLE_OAUTH_SECRET: str
 
-    frontend_redirect_url: str
+    REDIS_HOST: str
+    REDIS_PORT: int
 
-    redis_host: str
-    redis_port: int
+    PG_HOST: str
+    PG_PORT: int
+    PG_USER: str
+    PG_PW: str
+    PG_DB: str
 
-    pg_host: str
-    pg_port: int
-    pg_user: str
-    pg_pw: str
-    pg_db: str
-    pg_host: str
-    pg_port: int
-    pg_user: str
-    pg_pw: str
-    pg_db: str
-    
     PERPLEXITY_API_KEY: str
     OPENAI_API_KEY: str
 
@@ -40,4 +31,4 @@ class Setting(BaseSettings):
     )
 
 
-env = Setting()  # type: ignore
+setting = Setting()  # type: ignore
