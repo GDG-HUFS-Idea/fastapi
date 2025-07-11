@@ -12,14 +12,14 @@ from app.usecase.project.retrieve_my_projects import (
     RetrieveMyProjectsUsecaseResponse,
 )
 
-project_router = APIRouter(prefix="/project", tags=["project"])
+project_router = APIRouter(prefix="/projects", tags=["project"])
 
 
 @project_router.get(
-    path="/",
+    path="",
     response_model=RetrieveMyProjectsUsecaseResponse,
 )
-async def retrieve_overview_analysis(
+async def retrieve_projects(
     dto: Annotated[RetrieveMyProjectsUsecaseDTO, Depends()],
     usecase: RetrieveMyProjectsUsecase = Depends(get_retrieve_my_projects_usecase),
     payload: Payload = Depends(get_current_user),

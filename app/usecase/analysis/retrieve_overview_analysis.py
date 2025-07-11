@@ -1,34 +1,69 @@
 import logging
-from typing import List, Optional
+from typing import List
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from app.domain.market_research import MarketResearch
-from app.domain.market_trend import MarketTrend
-from app.domain.overview_analysis import OverviewAnalysis
-from app.domain.revenue_benchmark import RevenueBenchmark
+from app.common import schemas
 from app.repository.market_research import MarketResearchRepository
 from app.repository.market_trend import MarketTrendRepository
 from app.repository.overview_analysis import OverviewAnalysisRepository
 from app.repository.project import ProjectRepository
 from app.repository.revenue_benchmark import RevenueBenchmarkRepository
 from app.service.auth.jwt import Payload
-from app.common.exceptions import NotFoundException, RepositoryError, UsecaseException, InternalServerException
+from app.common.exceptions import ForbiddenException, NotFoundException, RepositoryError, UsecaseException, InternalServerException
 
 logger = logging.getLogger(__name__)
 
 
 class RetrieveOverviewAnalysisUsecaseDTO(BaseModel):
-    project_id: int = Query()
+    project_id: int = Field(Query())
+
+
+class _Score(BaseModel):
+    market: int
+    simliar_service: int
+    risk: int
+    opportunity: int
+
+
+class _MarketTrend(BaseModel):
+    year: int
+    size: float
+    growth_rate: float
+    currency: str
+    source: str
+
+
+class _MarketTrends(BaseModel):
+    domestic: List[_MarketTrend]
+    global_: List[_MarketTrend] = Field(alias="global")
+
+
+class _RevenueBenchmark(BaseModel):
+    average_revenue: float
+    currency: str
+    source: str
+
+
+class _RevenueBenchmarks(BaseModel):
+    domestic: _RevenueBenchmark
+    global_: _RevenueBenchmark = Field(alias="global")
 
 
 class RetrieveOverviewAnalysisUsecaseResponse(BaseModel):
-    overview_analysis: OverviewAnalysis
-    market_research: Optional[MarketResearch] = None
-    domestic_market_trends: List[MarketTrend] = []
-    global_market_trends: List[MarketTrend] = []
-    domestic_revenue_benchmark: Optional[RevenueBenchmark] = None
-    global_revenue_benchmark: Optional[RevenueBenchmark] = None
+    ksic_hierarchy: schemas.KSICHierarchy
+    evaluation: str
+    score: _Score
+    market_trends: _MarketTrends
+    revenue_becnhmarks: _RevenueBenchmarks
+    similar_services: List[schemas.SimilarService]
+    support_programs: List[schemas.SupportProgram]
+    target_markets: List[schemas.TargetMarket]
+    limitations: List[schemas.Limitation]
+    marketing_plan: schemas.MarketingPlan
+    business_model: schemas.BusinessModel
+    opportunities: List[str]
+    team_requirements: List[schemas.TeamRequirement]
 
 
 class RetrieveOverviewAnalysisUsecase:
@@ -52,57 +87,84 @@ class RetrieveOverviewAnalysisUsecase:
         payload: Payload,
     ) -> RetrieveOverviewAnalysisUsecaseResponse:
         try:
-            # 프로젝트 ID로 개요 분석 조회
-            overview_analysis = await self._overview_analysis_repository.find_by_project_id(dto.project_id)
-            if not overview_analysis:
-                raise NotFoundException(f"프로젝트({dto.project_id})에 대한 분석 결과를 찾을 수 없습니다")
+            overview_analysis_data = await self._overview_analysis_repository.find_by_project_id(dto.project_id)
+            if not overview_analysis_data:
+                raise NotFoundException("개요 분석 데이터를 찾을 수 없습니다.")
 
-            # TODO: 소유자 확인 필요
+            (project, _, overview_analysis) = overview_analysis_data
+            if project.user_id != payload.id:
+                raise ForbiddenException("해당 프로젝트에 대한 권한이 없습니다.")
 
-            # KSIC 계층 구조로 시장 분석 및 관련 데이터 조회
-            hierarchy_data = overview_analysis.ksic_hierarchy
-            if isinstance(hierarchy_data, dict):
-                ksic_hierarchy_string = ">".join(
-                    [
-                        hierarchy_data["large"]["name"],
-                        hierarchy_data["medium"]["name"],
-                        hierarchy_data["small"]["name"],
-                        hierarchy_data["detail"]["name"],
-                    ]
-                )
-            else:
-                # _KSICHierarchy 객체인 경우
-                ksic_hierarchy_string = ">".join(
-                    [
-                        hierarchy_data.large.name,
-                        hierarchy_data.medium.name,
-                        hierarchy_data.small.name,
-                        hierarchy_data.detail.name,
-                    ]
-                )
+            market_research = await self._market_research_repository.find_by_ksic_hierarchy(ksic_hierarchy=overview_analysis.ksic_hierarchy)
+            if market_research is None:
+                raise NotFoundException("시장 조사 데이터를 찾을 수 없습니다.")
+            assert market_research.id is not None
 
-            market_data = await self._market_research_repository.find_joined_by_ksic_hierarchy(ksic_hierarchy=ksic_hierarchy_string)
+            market_trends_data = await self._market_trend_repository.find_by_market_id(market_research.id)
+            if not market_trends_data:
+                raise NotFoundException("시장 트렌드 데이터를 찾을 수 없습니다.")
+            (domestic_market_trends, global_market_trends) = market_trends_data
 
-            # 시장 데이터가 없는 경우 기본 응답 반환
-            if market_data is None:
-                raise NotFoundException(f"프로젝트({dto.project_id})에 대한 시장 분석 데이터를 찾을 수 없습니다")
-
-            # 시장 데이터 언패킹
-            (
-                market_research,
-                domestic_trends,
-                global_trends,
-                domestic_revenue,
-                global_revenue,
-            ) = market_data
+            revenue_benchmarks_data = await self._revenue_benchmark_repository.find_by_market_id(market_research.id)
+            if not revenue_benchmarks_data:
+                raise NotFoundException("수익 벤치마크 데이터를 찾을 수 없습니다.")
+            (domestic_revenue, global_revenue) = revenue_benchmarks_data
 
             return RetrieveOverviewAnalysisUsecaseResponse(
-                overview_analysis=overview_analysis,
-                market_research=market_research,
-                domestic_market_trends=domestic_trends,
-                global_market_trends=global_trends,
-                domestic_revenue_benchmark=domestic_revenue,
-                global_revenue_benchmark=global_revenue,
+                score=_Score(
+                    market=market_research.market_score,
+                    simliar_service=overview_analysis.similarity_score,
+                    risk=overview_analysis.risk_score,
+                    opportunity=overview_analysis.opportunity_score,
+                ),
+                ksic_hierarchy=overview_analysis.ksic_hierarchy,
+                evaluation=overview_analysis.evaluation,
+                similar_services=overview_analysis.similar_services,
+                market_trends=_MarketTrends(
+                    **{
+                        "domestic": [
+                            _MarketTrend(
+                                year=trend.year,
+                                size=trend.size,
+                                growth_rate=trend.growth_rate,
+                                currency=trend.currency,
+                                source=trend.source,
+                            )
+                            for trend in domestic_market_trends
+                        ],
+                        "global": [
+                            _MarketTrend(
+                                year=trend.year,
+                                size=trend.size,
+                                growth_rate=trend.growth_rate,
+                                currency=trend.currency,
+                                source=trend.source,
+                            )
+                            for trend in global_market_trends
+                        ],
+                    }
+                ),
+                revenue_becnhmarks=_RevenueBenchmarks(
+                    **{
+                        "domestic": _RevenueBenchmark(
+                            average_revenue=domestic_revenue.average_revenue,
+                            currency=domestic_revenue.currency,
+                            source=domestic_revenue.source,
+                        ),
+                        "global": _RevenueBenchmark(  # type: ignore
+                            average_revenue=global_revenue.average_revenue,
+                            currency=global_revenue.currency,
+                            source=global_revenue.source,
+                        ),
+                    }
+                ),
+                support_programs=overview_analysis.support_programs,
+                target_markets=overview_analysis.target_markets,
+                limitations=overview_analysis.limitations,
+                marketing_plan=overview_analysis.marketing_plans,
+                business_model=overview_analysis.business_model,
+                opportunities=overview_analysis.opportunities,
+                team_requirements=overview_analysis.team_requirements,
             )
 
         except RepositoryError as exception:

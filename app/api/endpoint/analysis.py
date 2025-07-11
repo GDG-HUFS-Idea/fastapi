@@ -25,7 +25,7 @@ from app.usecase.analysis.retrieve_overview_analysis import (
     RetrieveOverviewAnalysisUsecaseResponse,
 )
 
-analysis_router = APIRouter(prefix="/analysis", tags=["analysis"])
+analysis_router = APIRouter(prefix="/analyses", tags=["analysis"])
 
 
 @analysis_router.post(

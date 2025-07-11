@@ -97,6 +97,7 @@ class WatchOverviewAnalysisTaskProgressUsecase:
                     "progress": task_progress.progress,
                     "message": task_progress.message,
                     "status": task_progress.status,
+                    "project_id": task_progress.project_id,
                 }
                 yield f"data: {json.dumps(response_data)}\n\n"
 
