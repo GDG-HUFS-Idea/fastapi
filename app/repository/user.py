@@ -1,7 +1,6 @@
 from typing import Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.domain.user import User
 from app.common.exceptions import UserRepositoryError
@@ -23,10 +22,8 @@ class UserRepository:
             result = await self._session.exec(query)
             return result.first()
 
-        except SQLAlchemyError as exception:
-            raise UserRepositoryError(f"이메일({email})로 사용자 조회 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise UserRepositoryError(f"사용자 조회 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise UserRepositoryError("사용자 조회 중 오류가 발생했습니다.") from exception
 
     async def save(
         self,
@@ -37,7 +34,5 @@ class UserRepository:
             await self._session.flush()
             await self._session.refresh(user)
 
-        except SQLAlchemyError as exception:
-            raise UserRepositoryError(f"사용자 저장 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise UserRepositoryError(f"사용자 저장 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise UserRepositoryError("사용자 저장 중 오류가 발생했습니다.") from exception
