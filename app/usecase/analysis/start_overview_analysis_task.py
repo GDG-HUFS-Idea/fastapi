@@ -4,7 +4,7 @@ import logging
 import re
 from typing import List, Optional, Union, cast
 from fastapi import Request
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.common import schemas
 from app.common.enums import Currency, MarketScope, ProjectStatus, TaskStatus
@@ -42,12 +42,33 @@ logger = logging.getLogger(__name__)
 
 
 class StartOverviewAnalysisTaskUsecaseDTO(BaseModel):
-    problem: str
-    solution: str
+    problem: str = Field(description="해결하고자 하는 문제에 대한 설명")
+    solution: str = Field(description="제안하는 솔루션에 대한 설명")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "problem": "자연재해가 빈번하게 발생하는 상황에서 시민들이 필요한 비상용품을 빠르게 구매하기 어려운 문제가 있습니다.",
+                    "solution": "재해 대비 용품을 전문적으로 판매하는 온라인 플랫폼을 구축하여 시민들이 필요한 물품을 쉽게 구매할 수 있도록 하겠습니다.",
+                }
+            ]
+        }
+    )
 
 
 class StartOverviewAnalysisTaskUsecaseResponse(BaseModel):
-    task_id: str
+    task_id: str = Field(description="생성된 작업 ID (진행 상태 조회에 사용)")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "task_id": "uNkpUsM54EZ49CnUjRp_OA",
+                }
+            ]
+        }
+    )
 
 
 class StartOverviewAnalysisTaskUsecase:

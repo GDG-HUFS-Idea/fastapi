@@ -61,7 +61,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> Payload:
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))) -> Payload:
     try:
         if not credentials or not credentials.credentials:
             raise UnauthorizedException("Authorization header가 없습니다")

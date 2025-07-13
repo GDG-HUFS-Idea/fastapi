@@ -3,7 +3,7 @@ import json
 from typing import AsyncGenerator, Optional
 from fastapi import Query, Request
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field
 
 from app.common.enums import TaskStatus
@@ -20,7 +20,17 @@ from app.common.exceptions import (
 
 
 class WatchOverviewAnalysisTaskProgressUsecaseDTO(BaseModel):
-    task_id: str = Field(Query())
+    task_id: str = Field(Query(min_length=1, description="조회할 작업 ID"))
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "task_id": "uNkpUsM54EZ49CnUjRp_OA",
+                }
+            ]
+        }
+    )
 
 
 class WatchOverviewAnalysisTaskProgressUsecase:
