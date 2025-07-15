@@ -5,6 +5,7 @@ from app.api.endpoint.term import term_router
 from app.api.endpoint.project import project_router
 from app.api.endpoint.analysis import analysis_router
 
+
 router = APIRouter()
 
 router.include_router(auth_router)

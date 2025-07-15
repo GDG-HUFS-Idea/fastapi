@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.common.enums import TermType
 from app.repository.term import TermRepository
@@ -9,22 +9,67 @@ from app.common.exceptions import UsecaseException, NotFoundException, InternalS
 
 
 class RetrieveTermsUsecaseDTO(BaseModel):
-    ids: List[int] = Field(Query())
+    ids: List[int] = Field(Query(min_length=1, description="조회할 약관 ID 목록"))
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "ids": [1, 2, 4],
+                }
+            ]
+        }
+    )
 
 
 class _Term(BaseModel):
-    id: int
-    title: str
-    type: TermType
-    version: str
-    is_required: bool
-    content: str
-    created_at: datetime
+    id: int = Field(description="약관 ID")
+    title: str = Field(description="약관 제목")
+    type: TermType = Field(description="약관 타입")
+    version: str = Field(description="약관 버전")
+    is_required: bool = Field(description="필수 약관 여부")
+    content: str = Field(description="약관 내용")
+    created_at: datetime = Field(description="약관 생성일시")
 
 
 class RetrieveTermsUsecaseResponse(BaseModel):
-    terms: List[_Term]
-    missing_ids: Optional[List[int]] = None
+    terms: List[_Term] = Field(
+        description="조회된 약관 목록",
+    )
+    missing_ids: Optional[List[int]] = Field(
+        default=None,
+        description="존재하지 않는 약관 ID 목록",
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "terms": [
+                        {
+                            "id": 1,
+                            "title": "서비스 이용약관",
+                            "type": "terms_of_service",
+                            "version": "1.0",
+                            "is_required": True,
+                            "content": "본 약관은 회사가 제공하는 서비스의 이용 조건을 규정합니다.",
+                            "created_at": "2025-07-11T06:17:34.604304Z",
+                        },
+                        {
+                            "id": 2,
+                            "title": "개인정보처리방침",
+                            "type": "privacy_policy",
+                            "version": "1.0",
+                            "is_required": True,
+                            "content": "회사는 개인정보보호법에 따라 이용자의 개인정보를 보호합니다.",
+                            "created_at": "2025-07-11T06:17:34.604304Z",
+                        },
+                    ],
+                    "missing_ids": [4],
+                }
+            ]
+        }
+    )
 
 
 class RetrieveTermsUsecase:

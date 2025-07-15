@@ -26,9 +26,5 @@ class UserAgreementRepository:
 
             return term_agreements
 
-        except SQLAlchemyError as exception:
-            raise UserAgreementRepositoryError(f"UserAgreement 배치 저장 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise UserAgreementRepositoryError(
-                f"UserAgreement 배치 저장 중 예상치 못한 오류가 발생했습니다: {str(exception)}"
-            ) from exception
+            raise UserAgreementRepositoryError("사용자 약관 저장 중 오류가 발생했습니다.") from exception

@@ -1,7 +1,6 @@
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.domain.term import Term
 from app.common.exceptions import TermRepositoryError
@@ -23,10 +22,8 @@ class TermRepository:
             result = await self._session.exec(query)
             return list(result.all())
 
-        except SQLAlchemyError as exception:
-            raise TermRepositoryError(f"ID 목록({ids})으로 Term 조회 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise TermRepositoryError(f"Term 조회 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise TermRepositoryError("Term 조회 중 오류가 발생했습니다.") from exception
 
     async def find_active_terms(
         self,
@@ -36,10 +33,8 @@ class TermRepository:
             result = await self._session.exec(query)
             return list(result.all())
 
-        except SQLAlchemyError as exception:
-            raise TermRepositoryError(f"활성 Term 조회 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise TermRepositoryError(f"활성 Term 조회 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise TermRepositoryError("활성 Term 조회 중 오류가 발생했습니다.") from exception
 
     async def save_batch(
         self,
@@ -56,7 +51,5 @@ class TermRepository:
 
             return terms
 
-        except SQLAlchemyError as exception:
-            raise TermRepositoryError(f"Term 배치 저장 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise TermRepositoryError(f"Term 배치 저장 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise TermRepositoryError("Term 배치 저장 중 오류가 발생했습니다.") from exception

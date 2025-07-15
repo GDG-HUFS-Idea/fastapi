@@ -23,10 +23,8 @@ class ProjectIdeaRepository:
             await self._session.flush()
             await self._session.refresh(idea)
 
-        except SQLAlchemyError as exception:
-            raise ProjectIdeaRepositoryError(f"프로젝트 아이디어 저장 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise ProjectIdeaRepositoryError(f"프로젝트 아이디어 저장 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise ProjectIdeaRepositoryError("프로젝트 아이디어 저장 중 오류가 발생했습니다.") from exception
 
     async def find_many_by_user_id(
         self,
@@ -39,7 +37,5 @@ class ProjectIdeaRepository:
             result = await self._session.exec(query)
             return list(result.all())
 
-        except SQLAlchemyError as exception:
-            raise ProjectIdeaRepositoryError(f"프로젝트 아이디어 조회 쿼리 실행 중 오류가 발생했습니다: {str(exception)}") from exception
         except Exception as exception:
-            raise ProjectIdeaRepositoryError(f"프로젝트 조회 중 예상치 못한 오류가 발생했습니다: {str(exception)}") from exception
+            raise ProjectIdeaRepositoryError("프로젝트 아이디어 조회 중 오류가 발생했습니다.") from exception
