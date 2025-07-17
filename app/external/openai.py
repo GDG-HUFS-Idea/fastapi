@@ -119,7 +119,7 @@ class OpenAIClient:
         temperature: float,
         max_output_tokens: int,
         model: str = _MODEL,
-        tools: list = {"type": "web_search_preview"}
+        tools: list = [{"type": "web_search_preview"}]
     ) -> str:
         try:
             openai_client = _create_openai_client()
@@ -127,10 +127,10 @@ class OpenAIClient:
             response = await openai_client.responses.create(
                 model=model,
                 tools=tools,
+                input=input,
                 temperature=temperature,
                 max_output_tokens=max_output_tokens,
-                timeout=timeout_seconds,
-                input=input
+                timeout=timeout_seconds
             )
 
             if not response.output_text:
