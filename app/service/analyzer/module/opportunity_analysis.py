@@ -3,7 +3,7 @@ from textwrap import dedent
 from typing import List
 
 from app.common.utils import retry
-from app.external.openai_search import OpenAISearchClient
+from app.external.openai import OpenAIClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class OpportunityAnalysisService:
     def __init__(
         self,
     ) -> None:
-        self._openAI_search_client = OpenAISearchClient()
+        self._openAI_search_client = OpenAIClient()
 
     async def execute(
         self,
@@ -29,12 +29,11 @@ class OpportunityAnalysisService:
         try:
 
             async def operation():
-                return await self._openAI_search_client.fetch(
-                    user_prompt=self._generate_prompt(idea, issues, features),
-                    system_prompt="You are a helpful assistant that provides accurate and detailed information.",
+                return await self._openAI_search_client.search(
+                    input=self._generate_prompt(idea, issues, features),
                     timeout_seconds=self._TIMEOUT_SECONDS,
                     temperature=self._TEMPERATURE,
-                    max_tokens=self._MAX_TOKENS,
+                    max_output_tokens=self._MAX_TOKENS,
                 )
 
             return await retry(

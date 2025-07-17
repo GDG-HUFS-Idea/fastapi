@@ -5,7 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field, ValidationError
 
 from app.common.utils import retry, validate_json
-from app.external.openai_search import OpenAISearchClient
+from app.external.openai import OpenAIClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError, JSONValidationError, ModelValidationError
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class SimilarServiceResearchService:
     _MAX_ATTEMPTS = 3
 
     def __init__(self) -> None:
-        self._openAI_search_client = OpenAISearchClient()
+        self._openAI_search_client = OpenAIClient()
 
     async def execute(
         self,
@@ -42,12 +42,11 @@ class SimilarServiceResearchService:
         try:
 
             async def operation():
-                content = await self._openAI_search_client.fetch(
-                    user_prompt=self._generate_prompt(idea, features),
-                    system_prompt="You are a helpful assistant that provides accurate and detailed information in valid JSON format only.",
+                content = await self._openAI_search_client.search(
+                    input=self._generate_prompt(idea, features),
                     timeout_seconds=self._TIMEOUT_SECONDS,
                     temperature=self._TEMPERATURE,
-                    max_tokens=self._MAX_TOKENS,
+                    max_output_tokens=self._MAX_TOKENS,
                 )
 
                 # 디버깅: 원본 응답 로깅
