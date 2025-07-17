@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict, ValidationError
 from typing import List
 
 from app.common.utils import retry, validate_json
-from app.external.openai_search import OpenAISearchClient
+from app.external.openai import OpenAIClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError, JSONValidationError, ModelValidationError
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class MarketResearchService:
     def __init__(
         self,
     ) -> None:
-        self._openAI_search_client = OpenAISearchClient()
+        self._openAI_search_client = OpenAIClient()
 
     async def execute(
         self,
@@ -82,29 +82,26 @@ class MarketResearchService:
 
             async def operation():
                 # KSIC 분류 조회
-                ksic_content = await self._openAI_search_client.fetch(
-                    user_prompt=self._generate_ksic_classification_prompt(idea),
-                    system_prompt="You are a helpful assistant that provides accurate and detailed information.",
+                ksic_content = await self._openAI_search_client.search(
+                    input=self._generate_ksic_classification_prompt(idea),
                     timeout_seconds=self._TIMEOUT_SECONDS,
                     temperature=self._TEMPERATURE,
-                    max_tokens=self._MAX_TOKENS,
+                    max_output_tokens=self._MAX_TOKENS,
                 )
                 ksic_category = _KsicCategory.model_validate(json.loads(validate_json(ksic_content)))
 
                 (domestic_content, global_content) = await asyncio.gather(
-                    self._openAI_search_client.fetch(
-                        user_prompt=self._generate_domestic_market_research_prompt(idea, issues, features, method, ksic_category),
-                        system_prompt="You are a market research assistant that provides detailed and accurate market analysis.",
+                    self._openAI_search_client.search(
+                        input=self._generate_domestic_market_research_prompt(idea, issues, features, method, ksic_category),
                         timeout_seconds=self._TIMEOUT_SECONDS,
                         temperature=self._TEMPERATURE,
-                        max_tokens=self._MAX_TOKENS,
+                        max_output_tokens=self._MAX_TOKENS,
                     ),
-                    self._openAI_search_client.fetch(
-                        user_prompt=self._generate_global_market_research_prompt(idea, issues, features, method),
-                        system_prompt="You are a market research assistant that provides detailed and accurate market analysis.",
+                    self._openAI_search_client.search(
+                        input=self._generate_global_market_research_prompt(idea, issues, features, method),
                         timeout_seconds=self._TIMEOUT_SECONDS,
                         temperature=self._TEMPERATURE,
-                        max_tokens=self._MAX_TOKENS,
+                        max_output_tokens=self._MAX_TOKENS,
                     ),
                 )
 
