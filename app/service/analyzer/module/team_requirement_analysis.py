@@ -3,7 +3,7 @@ from textwrap import dedent
 from typing import List
 
 from app.common.utils import retry
-from app.external.perplexity import PerplexityClient
+from app.external.openai_search import OpenAISearchClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class TeamRequirementAnalysisService:
     _MAX_ATTEMPTS = 3
 
     def __init__(self) -> None:
-        self._perplexity_client = PerplexityClient()
+        self._openAI_search_client = OpenAISearchClient()
 
     async def execute(
         self,
@@ -27,7 +27,7 @@ class TeamRequirementAnalysisService:
         try:
 
             async def operation():
-                return await self._perplexity_client.fetch(
+                return await self._openAI_search_client.fetch(
                     user_prompt=self._generate_prompt(idea, issues, features),
                     system_prompt="You are a helpful assistant that provides accurate and detailed information.",
                     timeout_seconds=self._TIMEOUT_SECONDS,

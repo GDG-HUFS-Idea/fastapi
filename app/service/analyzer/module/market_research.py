@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict, ValidationError
 from typing import List
 
 from app.common.utils import retry, validate_json
-from app.external.perplexity import PerplexityClient
+from app.external.openai_search import OpenAISearchClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError, JSONValidationError, ModelValidationError
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class MarketResearchService:
     def __init__(
         self,
     ) -> None:
-        self._perplexity_client = PerplexityClient()
+        self._openAI_search_client = OpenAISearchClient()
 
     async def execute(
         self,
@@ -82,7 +82,7 @@ class MarketResearchService:
 
             async def operation():
                 # KSIC 분류 조회
-                ksic_content = await self._perplexity_client.fetch(
+                ksic_content = await self._openAI_search_client.fetch(
                     user_prompt=self._generate_ksic_classification_prompt(idea),
                     system_prompt="You are a helpful assistant that provides accurate and detailed information.",
                     timeout_seconds=self._TIMEOUT_SECONDS,
@@ -92,14 +92,14 @@ class MarketResearchService:
                 ksic_category = _KsicCategory.model_validate(json.loads(validate_json(ksic_content)))
 
                 (domestic_content, global_content) = await asyncio.gather(
-                    self._perplexity_client.fetch(
+                    self._openAI_search_client.fetch(
                         user_prompt=self._generate_domestic_market_research_prompt(idea, issues, features, method, ksic_category),
                         system_prompt="You are a market research assistant that provides detailed and accurate market analysis.",
                         timeout_seconds=self._TIMEOUT_SECONDS,
                         temperature=self._TEMPERATURE,
                         max_tokens=self._MAX_TOKENS,
                     ),
-                    self._perplexity_client.fetch(
+                    self._openAI_search_client.fetch(
                         user_prompt=self._generate_global_market_research_prompt(idea, issues, features, method),
                         system_prompt="You are a market research assistant that provides detailed and accurate market analysis.",
                         timeout_seconds=self._TIMEOUT_SECONDS,

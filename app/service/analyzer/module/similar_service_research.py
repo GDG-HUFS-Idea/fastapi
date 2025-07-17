@@ -5,7 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field, ValidationError
 
 from app.common.utils import retry, validate_json
-from app.external.perplexity import PerplexityClient
+from app.external.openai_search import OpenAISearchClient
 from app.common.exceptions import AnalysisServiceError, ExternalAPIError, JSONValidationError, ModelValidationError
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class SimilarServiceResearchService:
     _MAX_ATTEMPTS = 3
 
     def __init__(self) -> None:
-        self._perplexity_client = PerplexityClient()
+        self._openAI_search_client = OpenAISearchClient()
 
     async def execute(
         self,
@@ -42,7 +42,7 @@ class SimilarServiceResearchService:
         try:
 
             async def operation():
-                content = await self._perplexity_client.fetch(
+                content = await self._openAI_search_client.fetch(
                     user_prompt=self._generate_prompt(idea, features),
                     system_prompt="You are a helpful assistant that provides accurate and detailed information in valid JSON format only.",
                     timeout_seconds=self._TIMEOUT_SECONDS,
