@@ -3,7 +3,7 @@ name: CI/CD Pipeline for Dev Environment
 on:
   pull_request:
     types: [ closed ]
-    branches: [ dev ]
+    branches: [ develop ]
 
 env:
   DOCKER_IMAGE_NAME: back1ash/sp_back
