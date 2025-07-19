@@ -4,6 +4,7 @@ on:
   pull_request:
     types: [ closed ]
     branches: [ develop ]
+    workflow_dispatch:
 
 env:
   DOCKER_IMAGE_NAME: back1ash/sp_back
@@ -12,7 +13,7 @@ env:
 
 jobs:
   build-and-deploy-to-dev:
-    if: github.event.pull_request.merged == true
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout App Code
@@ -28,7 +29,12 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Set Image Tag
         id: set_tag
-        run: echo "IMAGE_TAG=$(echo ${{ github.event.pull_request.merge_commit_sha }} | cut -c1-7)" >> $GITHUB_ENV
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "IMAGE_TAG=$(echo ${{ github.event.pull_request.merge_commit_sha }} | cut -c1-7)" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          fi
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
