@@ -6,7 +6,7 @@ on:
     branches: [ dev ]
 
 env:
-  DOCKER_IMAGE_NAME: back1ash/SP_back
+  DOCKER_IMAGE_NAME: back1ash/sp_back
   GITOPS_REPO: back1ash/gitops
   MANIFEST_PATH_DIR: apps/fast-api/overlays/dev
 
