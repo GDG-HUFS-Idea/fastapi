@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: back1ash/sp_back
-  GITOPS_REPO: back1ash/gitops
+  GITOPS_REPO: GDG-HUFS-Idea/gitops
   MANIFEST_PATH_DIR: apps/fast-api/overlays/dev
 
 jobs:
