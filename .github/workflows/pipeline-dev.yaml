@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [ closed ]
     branches: [ develop ]
-    workflow_dispatch:
+  workflow_dispatch:
 
 env:
   DOCKER_IMAGE_NAME: back1ash/sp_back
