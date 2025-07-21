@@ -50,9 +50,9 @@ class SimilarServiceResearchService:
                 )
 
                 # 디버깅: 원본 응답 로깅
-                logger.debug(f"Perplexity 원본 응답 길이: {len(content)}")
-                logger.debug(f"Perplexity 원본 응답 (처음 500자): {content[:500]}")
-                logger.debug(f"Perplexity 원본 응답 (마지막 500자): {content[-500:]}")
+                logger.debug(f"OpenAI 원본 응답 길이: {len(content)}")
+                logger.debug(f"OpenAI 원본 응답 (처음 500자): {content[:500]}")
+                logger.debug(f"OpenAI 원본 응답 (마지막 500자): {content[-500:]}")
 
                 validated_json = validate_json(content)
                 parsed_data = json.loads(validated_json)
