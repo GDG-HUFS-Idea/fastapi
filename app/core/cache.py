@@ -1,6 +1,6 @@
 from redis.asyncio import Redis, from_url
 
-from app.core.config import setting
+from app.core.config import config
 
 
 _client = None
@@ -11,7 +11,7 @@ async def get_static_redis_session() -> Redis:
 
     if _client is None:
         _client = await from_url(
-            f"redis://{setting.REDIS_HOST}:{setting.REDIS_PORT}",
+            f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}",
             db=0,
             decode_responses=True,
             socket_keepalive=True,
@@ -20,7 +20,7 @@ async def get_static_redis_session() -> Redis:
         await _client.ping()
     except (ConnectionError, TimeoutError):
         _client = await from_url(
-            f"redis://{setting.REDIS_HOST}:{setting.REDIS_PORT}",
+            f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}",
             db=0,
             decode_responses=True,
             socket_keepalive=True,

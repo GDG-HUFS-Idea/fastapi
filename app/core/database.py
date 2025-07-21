@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.core.config import setting
+from app.core.config import config
+from app.core.env import env
 from app.domain.relation import setup_relations
 
 
@@ -50,10 +51,10 @@ def get_engine() -> AsyncEngine:
 
 def get_pg_url() -> str:
     if os.path.exists("/.dockerenv"):
-        host = setting.PG_HOST
+        host = config.PG_HOST
     else:
         host = "localhost"
-    return f"postgresql+asyncpg://{setting.PG_USER}:{setting.PG_PW}@{host}:{setting.PG_PORT}/{setting.PG_DB}"
+    return f"postgresql+asyncpg://{env.PG_USER}:{env.PG_PW}@{host}:{config.PG_PORT}/{config.PG_DB}"
 
 
 @lru_cache(maxsize=1)

@@ -4,13 +4,13 @@ from openai import AsyncOpenAI
 from openai import APIError, APITimeoutError, RateLimitError, AuthenticationError
 import asyncio
 
-from app.core.config import setting
+from app.core.env import env
 from app.common.exceptions import ExternalAPIError
 
 
 @lru_cache(maxsize=1)
 def _create_openai_client() -> AsyncOpenAI:
-    return AsyncOpenAI(api_key=setting.OPENAI_API_KEY)
+    return AsyncOpenAI(api_key=env.OPENAI_API_KEY)
 
 
 class OpenAIClient:

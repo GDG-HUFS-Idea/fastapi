@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, ValidationError
 
 from app.common.enums import OauthProvider
-from app.core.config import setting
+from app.core.env import env
 from app.common.exceptions import OAuthRedirectError, OAuthStateError, OAuthProfileError, OAuthDataCorruptedError
 
 
@@ -15,8 +15,8 @@ def _create_oauth() -> OAuth:
     oauth = OAuth()
     oauth.register(
         name=OauthProvider.GOOGLE.value,
-        client_id=setting.GOOGLE_OAUTH_CLIENT_ID,
-        client_secret=setting.GOOGLE_OAUTH_SECRET,
+        client_id=env.GOOGLE_OAUTH_CLIENT_ID,
+        client_secret=env.GOOGLE_OAUTH_SECRET,
         access_token_url="https://oauth2.googleapis.com/token",
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
         api_base_url="https://www.googleapis.com/oauth2/v1/",

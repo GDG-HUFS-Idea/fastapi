@@ -1,7 +1,7 @@
 from httpx import AsyncClient, HTTPStatusError, TimeoutException, ConnectError
 import json
 
-from app.core.config import setting
+from app.core.env import env
 from app.common.exceptions import ExternalAPIError
 
 
@@ -24,7 +24,7 @@ class PerplexityClient:
                 response = await client.post(
                     f"{self._API_BASE_URL}{self._CHAT_ENDPOINT}",
                     headers={
-                        "Authorization": f"Bearer {setting.PERPLEXITY_API_KEY}",
+                        "Authorization": f"Bearer {env.PERPLEXITY_API_KEY}",
                         "Content-Type": "application/json",
                     },
                     json={

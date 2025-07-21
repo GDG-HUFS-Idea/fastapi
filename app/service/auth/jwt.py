@@ -3,7 +3,7 @@ from typing import List
 from jose import ExpiredSignatureError, JWTError as JoseJWTError, jwt
 from pydantic import BaseModel, ValidationError
 
-from app.core.config import setting
+from app.core.env import env
 from app.common.enums import UserRole
 from app.common.exceptions import JWTEncodeError, JWTDecodeError, JWTExpiredError, JWTInvalidError
 
@@ -37,7 +37,7 @@ class JWTService:
 
             return jwt.encode(
                 payload_dict,
-                setting.JWT_SECRET,
+                env.JWT_SECRET,
                 algorithm=JWTService._ALGORITHM,
             )
 
@@ -51,7 +51,7 @@ class JWTService:
         try:
             raw_payload = jwt.decode(
                 token,
-                setting.JWT_SECRET,
+                env.JWT_SECRET,
                 algorithms=[JWTService._ALGORITHM],
                 options={"verify_signature": True},
             )

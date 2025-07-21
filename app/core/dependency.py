@@ -5,7 +5,7 @@ from typing import AsyncGenerator
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.common.exceptions import InternalServerException, JWTDecodeError, JWTExpiredError, JWTInvalidError, UnauthorizedException
-from app.core.config import setting
+from app.core.config import config
 from app.core.database import get_sessionmaker
 from app.repository.market_research import MarketResearchRepository
 from app.repository.market_trend import MarketTrendRepository
@@ -35,7 +35,7 @@ from app.usecase.term.retrieve_terms import RetrieveTermsUsecase
 
 async def get_redis_session() -> AsyncGenerator[Redis, None]:
     client = await from_url(
-        f"redis://{setting.REDIS_HOST}:{setting.REDIS_PORT}",
+        f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}",
         db=0,
         decode_responses=True,
         socket_keepalive=True,
