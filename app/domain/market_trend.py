@@ -14,6 +14,6 @@ class MarketTrend(SQLModel, table=True):
     year: int = Field(nullable=False)
     size: int = Field(nullable=False, sa_type=BIGINT)
     currency: Currency = Field(nullable=False)
-    growth_rate: Optional[float] = Field(default=None, decimal_places=2)
+    growth_rate: float = Field(default=None, decimal_places=2)
     source: str = Field(nullable=False)
     created_at: datetime = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=func.now()))

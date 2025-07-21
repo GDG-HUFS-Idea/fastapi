@@ -12,5 +12,4 @@ class RevenueBenchmark(SQLModel, table=True):
     scope: MarketScope = Field(nullable=False)
     average_revenue: int = Field(nullable=False, sa_type=BIGINT)
     currency: Currency = Field(nullable=False)
-    year: int = Field(nullable=False)
     source: str = Field(nullable=False)

@@ -1,6 +1,6 @@
 from fastapi import Path, Query, Request
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.common.enums import OauthProvider
 from app.service.auth.oauth import OAuthService
@@ -8,12 +8,26 @@ from app.common.exceptions import InternalServerException, OAuthError
 
 
 class RedirectOAuthUsecaseDTO(BaseModel):
-    provider: OauthProvider = Field(Path())
-    frontend_redirect_url: str = Field(Query())
+    provider: OauthProvider = Field(Path(description="OAuth 제공자"))
+    frontend_redirect_url: str = Field(Query(min_length=1, max_length=500, description="OAuth 인증 완료 후 리다이렉트할 프론트엔드 URL"))
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "provider": "google",
+                    "frontend_redirect_url": "http://localhost:3000/auth/callback",
+                },
+            ]
+        }
+    )
 
 
 class RedirectOAuthUsecase:
-    def __init__(self, oauth_service: OAuthService) -> None:
+    def __init__(
+        self,
+        oauth_service: OAuthService,
+    ) -> None:
         self._oauth_service = oauth_service
 
     async def execute(

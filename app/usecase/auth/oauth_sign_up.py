@@ -1,6 +1,6 @@
 from typing import List, Optional, cast
 from fastapi import Request
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.common.enums import SubscriptionPlan, UserRole
 from app.domain.user_agreement import UserAgreement
@@ -26,24 +26,54 @@ from app.common.exceptions import (
 
 
 class _TermAgreement(BaseModel):
-    term_id: int
-    is_agreed: bool
+    term_id: int = Field(ge=1, description="약관 ID")
+    is_agreed: bool = Field(description="약관 동의 여부")
 
 
 class OAuthSignUpUsecaseDTO(BaseModel):
-    code: str
-    term_agreements: List[_TermAgreement]
+    code: str = Field(min_length=10, max_length=100, description="OAuth 인증 과정에서 받은 임시 코드")
+    term_agreements: List[_TermAgreement] = Field(min_length=1, description="약관 동의 정보 목록")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "code": "dx8E5HLSE_nCsP6kQKUY7g",
+                    "term_agreements": [
+                        {"term_id": 1, "is_agreed": True},
+                        {"term_id": 2, "is_agreed": True},
+                        {"term_id": 3, "is_agreed": False},
+                    ],
+                }
+            ]
+        }
+    )
 
 
 class _User(BaseModel):
-    name: str
-    email: str
-    roles: List[UserRole]
+    name: str = Field(description="사용자 이름")
+    email: str = Field(description="사용자 이메일 주소")
+    roles: List[UserRole] = Field(description="사용자 역할 목록")
 
 
 class OAuthSignUpUsecaseResponse(BaseModel):
-    token: str
-    user: _User
+    token: str = Field(description="JWT 인증 토큰")
+    user: _User = Field(description="생성된 사용자 정보")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6InNlaHl1biIsInJvbGVzIjpbImdlbmVyYWwiXSwiZXhwIjoxNzUyNDgyOTQzLCJpYXQiOjE3NTIyMjM3NDN9.0Cl-dq714fN0KN1YD892N5zcTCmDJWRKVyKznacOpmA",
+                    "user": {
+                        "name": "sehyun",
+                        "email": "sehyun734@gmail.com",
+                        "roles": ["general"],
+                    },
+                }
+            ]
+        }
+    )
 
 
 class OAuthSignUpUsecase:

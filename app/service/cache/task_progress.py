@@ -14,6 +14,7 @@ class TaskProgress(BaseModel):
     message: str
     host: str
     user_id: Optional[int] = None
+    project_id: Optional[int] = None
     start_time: float
 
 
@@ -34,6 +35,8 @@ class TaskProgressCache(BaseCache[TaskProgress]):
         progress: Optional[float] = None,
         message: Optional[str] = None,
         host: Optional[str] = None,
+        user_id: Optional[int] = None,
+        project_id: Optional[int] = None,
         start_time: Optional[float] = None,
         expire_delta: Optional[timedelta] = None,
     ) -> bool:
@@ -49,7 +52,8 @@ class TaskProgressCache(BaseCache[TaskProgress]):
                 progress=progress if progress is not None else current_data.progress,
                 message=message if message is not None else current_data.message,
                 host=host if host is not None else current_data.host,
-                user_id=current_data.user_id,
+                user_id=user_id if user_id is not None else current_data.user_id,
+                project_id=project_id if project_id is not None else current_data.project_id,
                 start_time=start_time if start_time is not None else current_data.start_time,
             )
 

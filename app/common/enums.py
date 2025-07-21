@@ -48,12 +48,6 @@ class Currency(str, Enum):
     USD = "USD"
 
 
-class RiskCategory(str, Enum):
-    MARKET = "market"
-    TECH = "tech"
-    FINANCIAL = "financial"
-
-
 class Impact(str, Enum):
     HIGH = "high"
     MEDIUM = "medium"

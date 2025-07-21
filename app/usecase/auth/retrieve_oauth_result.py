@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import List, Optional, cast
 from fastapi import Query, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.common.enums import UserRole
 from app.domain.user import User
@@ -23,17 +23,29 @@ from app.common.exceptions import (
 
 
 class RetrieveOAuthResultUsecaseDTO(BaseModel):
-    code: str = Field(Query(), min_length=10)
+    code: str = Field(Query(min_length=10, max_length=100, description="OAuth 제공자로부터 받은 authorization code"))
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "code": "wnm_utANhykZXmAEbqTbrg",
+                }
+            ]
+        }
+    )
 
 
 class RetrieveOAuthResultUsecaseResponse(BaseModel):
-    has_account: bool
-    token: Optional[str] = None
-    user_id: Optional[int] = None
-    name: Optional[str] = None
-    roles: Optional[List[UserRole]] = None
-    code: Optional[str] = None
-    active_term_ids: Optional[List[int]] = None
+    has_account: bool = Field(description="사용자 계정 존재 여부")
+
+    token: Optional[str] = Field(default=None, description="JWT 토큰 (계정이 있는 경우)")
+    user_id: Optional[int] = Field(default=None, description="사용자 ID (계정이 있는 경우)")
+    name: Optional[str] = Field(default=None, description="사용자 이름 (계정이 있는 경우)")
+    roles: Optional[List[UserRole]] = Field(default=None, description="사용자 역할 목록 (계정이 있는 경우)")
+
+    code: Optional[str] = Field(default=None, description="임시 코드 (계정이 없는 경우)")
+    active_term_ids: Optional[List[int]] = Field(default=None, description="활성화된 약관 ID 목록 (계정이 없는 경우)")
 
 
 class RetrieveOAuthResultUsecase:
