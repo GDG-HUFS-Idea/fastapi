@@ -20,7 +20,6 @@ class Setting(BaseSettings):
     PG_PW: str
     PG_DB: str
 
-    PERPLEXITY_API_KEY: str
     OPENAI_API_KEY: str
 
     model_config = SettingsConfigDict(
