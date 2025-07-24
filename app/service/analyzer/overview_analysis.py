@@ -116,6 +116,7 @@ class _SupportProgram(BaseModel):
     amount: str
     period: str
     details: str
+    url: str
 
 
 class _Limitation(BaseModel):
@@ -364,6 +365,7 @@ class OverviewAnalysisService:
                 - 시장 기회 요인 (최소 5가지, 구체적인 근거와 함께)
                 - 활용 가능한 지원 사업/공모전 (실제 존재하는 프로그램, 신청 시기 포함)
                 - 지원 내용과 금액 (구체적인 지원 범위와 금액 명시)
+                - 각 지원 사업별 공식 웹사이트 URL (신뢰할 수 있는 출처)
 
             7. 한계점:
                 - 법률적 규제 (구체적인 법률명과 조항 포함)
@@ -451,7 +453,7 @@ class OverviewAnalysisService:
                 "5YearGlobal": "최근 5년간 글로벌 연평균 성장률(정확한 소수점 표기, 예: 7.2%)"
                 "source": "성장률 데이터 출처(구체적 기관명 또는 보고서명 필수 포함)"
             },
-             "marketSizeByYear": {
+            "marketSizeByYear": {
                 "domestic": [
                     {"year": 2020, "size": "$ 금액", "growthRate": "성장률(%)"},
                     {"year": 2021, "size": "$ 금액", "growthRate": "성장률(%)"},
@@ -547,8 +549,22 @@ class OverviewAnalysisService:
                 "기회요인5(근거: 구체적 시장 데이터)"
             ],
             "supportPrograms": [
-                {"name": "지원 프로그램1", "organization": "주관 기관", "amount": "지원 금액", "period": "신청 기간", "details": "지원 내용 상세"},
-                {"name": "지원 프로그램2", "organization": "주관 기관", "amount": "지원 금액", "period": "신청 기간", "details": "지원 내용 상세"}
+                {
+                    "name": "지원 프로그램1",
+                    "organization": "주관 기관",
+                    "amount": "지원 금액",
+                    "period": "신청 기간",
+                    "details": "지원 내용 상세",
+                    "url": "실제 접속 가능한 홈페이지 URL"
+                },
+                {
+                    "name": "지원 프로그램2",
+                    "organization": "주관 기관",
+                    "amount": "지원 금액",
+                    "period": "신청 기간",
+                    "details": "지원 내용 상세",
+                    "url": "실제 접속 가능한 홈페이지 URL"
+                }
             ],
             "limitations": [
                 {"category": "법률/규제", "details": "구체적인 법률명과 조항", "impact": "영향", "solution": "대응 방안"},
@@ -622,7 +638,7 @@ class OverviewAnalysisService:
             비즈니스 모델은 구체적인 수익 창출 방식과 금액 추정을 포함해주세요.
             각 투자 우선순위 항목에는 반드시 100자 내외의 세부 설명을 포함해야 합니다.
             점수는 반드시 위에 제시된 점수 산출 기준에 따라 계산하고, 하드코딩된 값을 사용하지 마세요.
-            최종 한줄평은 '[강점] 요소가 강점이 될 수 있고, [위험요소] 부분에 위험성을 가지고 있습니다. 실현 가능성은 [높음/중간/낮음]이며, 지속 가능성은 [높음/중간/낮음]입니다. 시장 진출 타이밍은 [구체적 시점]이 적절해 보입니다.' 형식을 따라주세요.
+            최종 한줄평은 '제안하신 아이디어는 [강점] 요소가 강점이 될 수 있고, [위험요소] 부분에 위험성을 가지고 있습니다. 실현 가능성은 [높음/중간/낮음]이며, 지속 가능성은 [높음/중간/낮음]입니다. 시장 진출 타이밍은 [구체적 시점]이 적절해 보입니다.' 형식을 따라주세요.
             """
         ).strip()
 
