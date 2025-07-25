@@ -49,7 +49,6 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
                 }
             },
         },
-        400: {"description": "잘못된 요청 - 회원가입에 필요한 약관이 존재하지 않는 경우"},
         401: {"description": "인증 실패 - 클라이언트 호스트 정보를 조회할 수 없는 경우"},
         403: {"description": "접근 권한 없음 - 요청한 호스트와 OAuth 프로필의 호스트가 일치하지 않는 경우"},
         404: {"description": "OAuth 프로필을 찾을 수 없는 경우"},
