@@ -71,11 +71,10 @@ async def retrieve_oauth_result(
     response_model_exclude_none=True,
     responses={
         200: {"description": "OAuth 회원가입 성공 - JWT 토큰과 사용자 정보 반환"},
-        400: {"description": "잘못된 요청 - 유효하지 않은 약관 ID, 필수 약관 미동의, 또는 누락된 약관이 있는 경우"},
         401: {"description": "인증 실패 - 클라이언트 호스트 정보를 조회할 수 없는 경우"},
         403: {"description": "접근 권한 없음 - 요청한 호스트와 OAuth 프로필의 호스트가 일치하지 않는 경우"},
         404: {"description": "OAuth 프로필을 찾을 수 없는 경우"},
-        422: {"description": "검증 오류 - 요청 데이터 형식이 유효하지 않은 경우"},
+        422: {"description": "검증 오류 - 요청 유효하지 않은 데이터 및 약관 ID, 필수 약관 미동의, 또는 누락된 약관이 있는 경우"},
         500: {"description": "서버 내부 오류 - JWT, 저장소, 캐시 처리 오류 또는 예상치 못한 오류 발생"},
     },
 )
