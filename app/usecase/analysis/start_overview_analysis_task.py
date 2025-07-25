@@ -42,8 +42,8 @@ logger = logging.getLogger(__name__)
 
 
 class StartOverviewAnalysisTaskUsecaseDTO(BaseModel):
-    problem: str = Field(description="해결하고자 하는 문제에 대한 설명")
-    solution: str = Field(description="제안하는 솔루션에 대한 설명")
+    problem: str = Field(description="해결하고자 하는 문제에 대한 설명", min_length=1)
+    solution: str = Field(description="제안하는 솔루션에 대한 설명", min_length=1)
 
     model_config = ConfigDict(
         json_schema_extra={
