@@ -106,3 +106,75 @@ class PreAnalysisDataService:
                 message=f"사전 분석 데이터 준비 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
             )
             raise
+
+# helper: 딕셔너리 경로 탐색
+from typing import Any, Dict
+
+def _dig(obj: Dict[str, Any], path: str, default=None):
+    parts = path.split(".")
+    cur = obj
+    for p in parts:
+        if not isinstance(cur, dict):
+            return default
+        cur = cur.get(p)
+        if cur is None:
+            return default
+    return cur
+
+# helper: 문자열 정규화
+def _normalize_str(val: Any) -> str | None:
+    if val is None:
+        return None
+    s = str(val).strip()
+    return s if s else None
+
+# 2차 기능 매핑 테이블 (1차 PreAnalysis 결과 → 9Blocks Input)
+# Python 속성명 기준으로, raw_input["business_case"] 등에서 꺼냅니다.
+_MAPPING_TABLE: Dict[str, Dict[str, str]] = {
+    "customer_segment": {
+        # run_blocks9_analysis.py 의 problem_dict["developmentMotivation"]
+        "service_purpose": "problem.developmentMotivation",
+    },
+    "value_proposition": {
+        # run_blocks9_analysis.py 의 solution_dict["coreElements"]
+        "unique_features":              "solution.coreElements",
+        # 1차 리포트 의 businessModel.value 필드 활용
+        "emotional_or_practical_value": "businessModel.value",
+    },
+    "channels": {
+        # 1차 리포트의 마케팅 전략 채널 및 KPI
+        "performance_metrics":      "marketingStrategy.kpis",
+        "main_touchpoints":         "marketingStrategy.channels",
+        "tried_marketing_channels": "marketingStrategy.channels",
+        "sales_distribution":       "businessModel.revenueStructure",
+    },
+    "customer_relationships": {},    # 사용자 보완 입력 전용
+    "revenue_streams": {
+        # 1차 리포트의 비즈니스 모델 수익 구조 및 평균 수익 활용
+        "current_revenue_model": "businessModel.revenueStructure",
+        "pricing_policy":        "businessModel.revenueStructure",
+        "revenue_amount":        "averageRevenue.domestic",
+    },
+    "key_resources": {},            # 사용자 보완 입력 전용
+    "key_activities": {},           # 사용자 보완 입력 전용
+    "key_partnerships": {},         # 사용자 보완 입력 전용
+    "cost_structure": {},           # 사용자 보완 입력 전용
+}
+
+
+def to_second_stage_dict(raw_input: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """
+    1차 분석 결과(raw_input) + 사용자 보완 입력 → 9Blocks 각 섹션 Input dict로 변환
+    - _MAPPING_TABLE 기준으로 추출, 사용자 override 값이 있으면 우선 사용
+    """
+    result: Dict[str, Dict[str, Any]] = {}
+    for block, field_map in _MAPPING_TABLE.items():
+        override = raw_input.get(block) or {}
+        mapped: Dict[str, Any] = {}
+        for out_field, path in field_map.items():
+            if out_field in override:
+                mapped[out_field] = override[out_field]
+            else:
+                mapped[out_field] = _normalize_str(_dig(raw_input, path))
+        result[block] = mapped
+    return result
