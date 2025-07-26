@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any, Dict
 from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import StreamingResponse
 
@@ -25,6 +25,8 @@ from app.usecase.analysis.retrieve_overview_analysis import (
     RetrieveOverviewAnalysisUsecaseDTO,
     RetrieveOverviewAnalysisUsecaseResponse,
 )
+from app.usecase.analysis.blocks9_analysis import Blocks9AnalysisUsecase
+from app.service.analyzer.dto.second_stage import Blocks9Input
 
 analysis_router = APIRouter(prefix="/analyses", tags=["analysis"])
 
@@ -111,3 +113,25 @@ async def retrieve_overview_analysis(
     payload: Payload = Depends(get_current_user),
 ):
     return await usecase.execute(dto, payload)
+
+@analysis_router.post(
+    path="/blocks9",
+    status_code=200,
+    response_model=Blocks9AnalysisUsecase,
+    response_model_exclude_none=True,
+    responses={
+        200: {"description": "블록 9 분석 결과 반환"},
+        422: {"description": "검증 오류 - 입력 데이터가 유효하지 않은 경우"},
+        500: {"description": "서버 내부 오류 - 예상치 못한 오류 발생"},
+    },
+)
+async def analyze_blocks9(
+    dto: Annotated[Blocks9Input, Body()],
+    usecase: Blocks9AnalysisUsecase = Depends(Blocks9AnalysisUsecase()),
+    payload: Payload = Depends(get_current_user),
+):
+    """
+    블록 9 분석 실행 엔드포인트
+    - 입력 데이터 검증 및 분석 실행
+    """
+    return await usecase.execute(dto.model_dump(), payload)
